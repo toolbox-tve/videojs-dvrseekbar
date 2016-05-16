@@ -46,7 +46,9 @@ QUnit.test('registers itself with video.js', function(assert) {
     'videojs-dvrseekbar plugin was registered'
   );
 
-  this.player.dvrseekbar();
+  this.player.dvrseekbar({
+    isLive: true
+  });
 
   // Tick the clock forward enough to trigger the player to be "ready".
   this.clock.tick(1);

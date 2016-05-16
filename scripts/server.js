@@ -20,7 +20,7 @@ const srces = {
   css: 'src/plugin.scss',
   js: 'src/plugin.js',
   langs: 'lang/*.json',
-  tests: glob.sync('test/**/*.test.js')
+  tests: glob.sync('test/**/*.spec.js')
 };
 
 const dests = {
@@ -125,7 +125,7 @@ Promise.all([bundle('js'), bundle('tests')]).then(() => {
      * @param  {String} event
      * @param  {String} file
      */
-    '^test/.+\.test\.js$'(event, file) {
+    '^test/.+\.spec\.js$'(event, file) {
       console.log('re-bundling tests');
       bundle('tests').then(() => server.reload());
     }
@@ -156,7 +156,7 @@ Promise.all([bundle('js'), bundle('tests')]).then(() => {
       'index.html',
       'lang/*.json',
       'src/**/*.{scss,js}',
-      'test/**/*.test.js',
+      'test/**/*.spec.js',
       'test/index.html'
     ])
     .on('watch', (event, file) => {

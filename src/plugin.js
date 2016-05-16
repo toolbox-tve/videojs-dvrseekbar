@@ -16,7 +16,14 @@ const defaults = {};
  */
 const onPlayerReady = (player, options) => {
   player.addClass('vjs-dvrseekbar');
+  videojs.log('dvrSeekbar Plugin enabled!', options);
 };
+
+const onTimeUpdate = (player, e) => {
+
+  player.duration(player.currentTime());
+};
+
 
 /**
  * A video.js plugin.
@@ -31,6 +38,15 @@ const onPlayerReady = (player, options) => {
  *           An object of options left to the plugin author to define.
  */
 const dvrseekbar = function(options) {
+
+  if(!options.isLive) {
+        return;
+  }
+
+  this.on('timeupdate', (e) => {
+    onTimeUpdate(this, e);
+  });
+
   this.ready(() => {
     onPlayerReady(this, videojs.mergeOptions(defaults, options));
   });
