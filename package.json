@@ -86,6 +86,7 @@
     "test/"
   ],
   "dependencies": {
+    "hls.js": "^0.5.32",
     "jquery": "^2.2.3",
     "video.js": "^5.6.0"
   },
