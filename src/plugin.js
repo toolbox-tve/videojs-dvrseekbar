@@ -1,5 +1,5 @@
 import videojs from 'video.js';
-
+import DVRSeekBar from 'dvrSeekBar.js'
 // Default options for the plugin.
 const defaults = {};
 
