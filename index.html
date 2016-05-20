@@ -9,22 +9,39 @@
 <body>
   <h1>Video.js DVRSeekbar plugin</h1>
   <video id="videojs-dvrseekbar-player" class="video-js vjs-default-skin" controls>
-    <source src="//vjs.zencdn.net/v/oceans.mp4" type='video/mp4'>
-    <source src="//vjs.zencdn.net/v/oceans.webm" type='video/webm'>
   </video>
   <ul>
     <li><a href="/test/">Run unit tests in browser.</a></li>
 
   </ul>
   <script src="/node_modules/video.js/dist/video.js"></script>
+  <script src="/node_modules/hls.js/dist/hls.js"></script>
+  <script src="/src/plugins-forked/videojs-hlsjs/videojs-hlsjs.js"></script>
   <script src="/dist/videojs-dvrseekbar.js"></script>
   <script>
     (function(window, videojs) {
+      var sample = [
+            { src:'//vjs.zencdn.net/v/oceans.mp4', type:'video/mp4' },
+            { src:'//vjs.zencdn.net/v/oceans.webm', type:'video/webm' }
+          ],
+          sampleLive = {
+            type:'application/x-mpegURL',
+            src: 'http://media.blacktrash.org/stsp.m3u8',
+            isLive: true
+          };
 
-      var player = window.player = videojs('videojs-dvrseekbar-player');
-      player.dvrseekbar({
-        isLive: false
-      });
+      var player = window.player = videojs('videojs-dvrseekbar-player'),
+      content = sampleLive;
+
+      if (content.isLive) {
+        player.dvrseekbar();
+      } else {
+        console.log('The Content is not Live, DVR Seekbar support Not Enabled!');
+      }
+
+      player.src(content);
+      player.play();
+
     }(window, window.videojs));
   </script>
 </body>

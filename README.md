@@ -57,7 +57,7 @@ require(['video.js', 'videojs-dvrseekbar'], function(videojs) {
 
 ## License
 
-Apache-2.0. Copyright (c) Davi &lt;dluna@tbxnet.com&gt;
+Apache-2.0. Copyright (c) ToolBox-tve
 
 
 [videojs]: http://videojs.com/
