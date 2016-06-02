@@ -30,13 +30,21 @@
             isLive: true
           };
 
-      var player = window.player = videojs('videojs-dvrseekbar-player'),
+      var player =  null,
+      playerOptions = {},
       content = sampleLive;
 
       if (content.isLive) {
+
+        playerOptions.controlBar = {
+          volumeMenuButton: { 'vertical': true, inline: false }
+        };
+
+        player = window.player = videojs('videojs-dvrseekbar-player', playerOptions);
         player.dvrseekbar();
       } else {
         console.log('The Content is not Live, DVR Seekbar support Not Enabled!');
+        player = window.player = videojs('videojs-dvrseekbar-player');
       }
 
       player.src(content);

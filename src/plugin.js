@@ -57,6 +57,26 @@ class DVRSeekBar extends SeekBar {
  */
 const onPlayerReady = (player, options) => {
   player.addClass('vjs-dvrseekbar');
+  player.controlBar.addClass('vjs-dvrseekbar-control-bar');
+
+  if (player.controlBar.progressControl) {
+    player.controlBar.progressControl.addClass('vjs-dvrseekbar-progress-control');
+  }
+
+  // ADD Live Button:
+  let btnLiveEl = document.createElement('div'),
+    newLink = document.createElement('a');
+
+  btnLiveEl.id = 'liveButton';
+  btnLiveEl.className = 'vjs-live-button vjs-control';
+  btnLiveEl.innerHTML = document.getElementsByClassName('vjs-live-display')[0].innerHTML;
+  btnLiveEl.appendChild(newLink);
+
+  let controlBar = document.getElementsByClassName('vjs-control-bar')[0],
+  insertBeforeNode = document.getElementsByClassName('vjs-progress-control')[0];
+
+  controlBar.insertBefore(btnLiveEl, insertBeforeNode);
+
   videojs.log('dvrSeekbar Plugin ENABLED!', options);
 };
 
@@ -89,24 +109,6 @@ const dvrseekbar = function(options) {
 
   //Register custom DVRSeekBar Component:
   videojs.registerComponent('DVRSeekBar', DVRSeekBar);
-
-  /* TODO!!!!
-  if (options.isLive) { // if live stream
-      if (player.getChild('DVRSeekBar') === undefined) {
-          player.removeChild('seekBar');
-          player.removeChild('timeDivider');
-          player.removeChild('durationDisplay');
-          player.addChild('DVRSeekBar', options);
-      }
-  } else { // if on-demand
-      if (player.getChild('DVRSeekBar') !== undefined) {
-          player.removeChild('DVRSeekBar');
-          player.addChild('timeDivider');
-          player.addChild('durationDisplay');
-          player.addChild('seekBar');
-      }
-      return;
-  }*/
 
   this.on('timeupdate', (e) => {
     onTimeUpdate(this, e);
