@@ -16,25 +16,28 @@
   .vjs-current-time, .vjs-duration, .vjs-remaining-time, .vjs-time-divider {
     display: none;
   }
+  .vjs-live-display {
+    display: none;
+  }
 }
 
 .vjs-control-bar.vjs-dvrseekbar-control-bar {
-  .vjs-live-button {
-    display: block;
-    color: #fff;
-    line-height: 1em;
-    margin: .6em auto;
-    padding: .35em 0;
-    cursor: pointer;
-    float: right;
-    text-align: center;
-  }
+
   .vjs-dvrseekbar-progress-control {
     position: relative;
     height: 3em;
     background: 0 0;
     padding: 0 1em;
     top: 0;
+  }
+  .vjs-live-button {
+    display: block;
+    text-align: center;
+    cursor: pointer;
+    float: right;
+    line-height: 1em;
+    padding: 1em 1em;
+
   }
 }
 
@@ -79,4 +82,23 @@
   -moz-transition-delay: 3s;
   -ms-transition-delay: 3s;
   -o-transition-delay: 3s;
+}
+
+.label {
+  padding: 1px 3px 2px;
+  font-size: 9.75px;
+  font-weight: bold;
+  color: #ffffff;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background-color: #bfbfbf;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  &.important {
+    background-color: #c43c35;
+  }
+  &.onair {
+    background-color: #46a546;
+  }
 }

@@ -67,9 +67,27 @@ const onPlayerReady = (player, options) => {
   let btnLiveEl = document.createElement('div'),
     newLink = document.createElement('a');
 
-  btnLiveEl.id = 'liveButton';
   btnLiveEl.className = 'vjs-live-button vjs-control';
-  btnLiveEl.innerHTML = document.getElementsByClassName('vjs-live-display')[0].innerHTML;
+
+  newLink.innerHTML = document.getElementsByClassName('vjs-live-display')[0].innerHTML;
+  newLink.id = 'liveButton';
+
+  if (!player.paused()) {
+    newLink.className = 'label onair';
+  }
+
+  let clickHandler = function () {
+    player.pause();
+    player.currentTime(0);
+    //player.load();
+    player.play();
+  };
+
+  if(newLink.addEventListener) // DOM method
+    newLink.addEventListener('click', clickHandler, false);
+  else if(anchor.attachEvent) // this is for IE, because it doesn't support addEventListener
+    newLink.attachEvent('onclick', function(){ return clickHandler.apply(newLink, [window.event])});
+
   btnLiveEl.appendChild(newLink);
 
   let controlBar = document.getElementsByClassName('vjs-control-bar')[0],
@@ -85,6 +103,11 @@ const onTimeUpdate = (player, e) => {
   player.duration(player.currentTime());
 };
 
+const onPlay = (player, e) => {
+  let btnLiveEl = document.getElementById('liveButton');
+
+  btnLiveEl.className = 'label onair';
+};
 
 /**
  * A video.js plugin.
@@ -112,6 +135,20 @@ const dvrseekbar = function(options) {
 
   this.on('timeupdate', (e) => {
     onTimeUpdate(this, e);
+  });
+
+  this.on('play', (e) => {
+    onPlay(this, e);
+  });
+
+this.on('pause', (e) => {
+    let btnLiveEl = document.getElementById('liveButton');
+
+    btnLiveEl.className = '';
+  });
+
+  this.on('seeked', (e) => {
+    console.log('SEEKED!');
   });
 
   this.ready(() => {

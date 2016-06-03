@@ -8,7 +8,7 @@
 </head>
 <body>
   <h1>Video.js DVRSeekbar plugin</h1>
-  <video id="videojs-dvrseekbar-player" class="video-js vjs-default-skin" controls>
+  <video id="videojs-dvrseekbar-player" class="video-js vjs-16-9 vjs-default-skin" controls preload>
   </video>
   <ul>
     <li><a href="/test/">Run unit tests in browser.</a></li>
@@ -28,11 +28,16 @@
             type:'application/x-mpegURL',
             src: 'http://media.blacktrash.org/stsp.m3u8',
             isLive: true
-          };
+          },
+          liveContent = {
+          src: 'https://nickelodeonhls-lh.akamaihd.net/i/nickHLS_1@352363/master.m3u8?hdnea=st=1464707624~exp=1465312424~acl=/*~hmac=8b977c15e19da848424b9ddc600d47bff8bfd30f5d617c13c81ff0358fd91d21',
+          type: 'application/x-mpegURL',
+          isLive: true
+        };
 
       var player =  null,
       playerOptions = {},
-      content = sampleLive;
+      content = liveContent;
 
       if (content.isLive) {
 
