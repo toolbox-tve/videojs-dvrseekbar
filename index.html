@@ -17,8 +17,10 @@
 
   </ul>
   <script src="/node_modules/video.js/dist/video.js"></script>
+  <!--
   <script src="/node_modules/hls.js/dist/hls.js"></script>
-  <script src="/src/plugins-forked/videojs-hlsjs/videojs-hlsjs.js"></script>
+  -->
+  <script src="/node_modules/videojs-contrib-hls/dist/videojs-contrib-hls.js"></script>
   <script src="/dist/videojs-dvrseekbar.js"></script>
   <script>
     (function(window, videojs) {
@@ -30,16 +32,17 @@
             type:'application/x-mpegURL',
             src: 'http://media.blacktrash.org/stsp.m3u8',
             isLive: true
-          },
-          liveContent = {
-          src: 'https://nickelodeonhls-lh.akamaihd.net/i/nickHLS_1@352363/master.m3u8?hdnea=st=1464707624~exp=1465312424~acl=/*~hmac=8b977c15e19da848424b9ddc600d47bff8bfd30f5d617c13c81ff0358fd91d21',
-          type: 'application/x-mpegURL',
-          isLive: true
-        };
+          };
 
       var player =  null,
-      playerOptions = {},
-      content = liveContent;
+      playerOptions = {
+        html5: {
+          hls: {
+            withCredentials: false
+          }
+        }
+      },
+      content = sampleLive;
 
       if (content.isLive) {
 
@@ -47,15 +50,16 @@
           volumeMenuButton: { 'vertical': true, inline: false }
         };
 
-        player = window.player = videojs('videojs-dvrseekbar-player', playerOptions);
-        player.dvrseekbar();
+        player = window.player = videojs('videojs-dvrseekbar-player', playerOptions, function () {
+          player.src(content);
+          player.dvrseekbar();
+          player.play();
+        });
+
       } else {
         console.log('The Content is not Live, DVR Seekbar support Not Enabled!');
         player = window.player = videojs('videojs-dvrseekbar-player');
       }
-
-      player.src(content);
-      player.play();
 
     }(window, window.videojs));
   </script>

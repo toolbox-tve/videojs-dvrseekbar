@@ -105,8 +105,9 @@ const onTimeUpdate = (player, e) => {
 
 const onPlay = (player, e) => {
   let btnLiveEl = document.getElementById('liveButton');
-
-  btnLiveEl.className = 'label onair';
+  if (btnLiveEl) {
+    btnLiveEl.className = 'label onair';
+  }
 };
 
 /**
