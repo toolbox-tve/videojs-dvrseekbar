@@ -106,8 +106,10 @@ const onTimeUpdate = (player, e) => {
 const onPlay = (player, e) => {
   let btnLiveEl = document.getElementById('liveButton');
 
-  btnLiveEl.className = 'label onair';
-  btnLiveEl.innerHTML = '<span class="vjs-control-text">Stream Type</span>LIVE';
+  if (btnLiveEl) {
+    btnLiveEl.className = 'label onair';
+    btnLiveEl.innerHTML = '<span class="vjs-control-text">Stream Type</span>LIVE';
+  }
 };
 
 /**
