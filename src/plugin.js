@@ -141,14 +141,19 @@ const dvrseekbar = function(options) {
     onPlay(this, e);
   });
 
-this.on('pause', (e) => {
+  this.on('pause', (e) => {
     let btnLiveEl = document.getElementById('liveButton');
 
     btnLiveEl.className = '';
   });
 
   this.on('seeked', (e) => {
-    console.log('SEEKED!');
+    let btnLiveEl = document.getElementById('liveButton');
+
+    if (player.duration() < player.currentTime()) {
+        btnLiveEl.className = 'label';
+        btnLiveEl.innerHTML = '<span class="vjs-control-text">Stream Type</span>DVR';
+    }
   });
 
   this.ready(() => {
