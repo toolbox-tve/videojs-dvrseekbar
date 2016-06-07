@@ -18,7 +18,7 @@ class DVRSeekBar extends SeekBar {
   }
 
   handleMouseMove(e) {
-   let bufferedTime, newTime;
+    let bufferedTime, newTime;
 
     if (this.player_.duration() < this.player_.currentTime()) {
         this.player_.duration(this.player_.currentTime());
@@ -34,7 +34,7 @@ class DVRSeekBar extends SeekBar {
         newTime = this.options.startTime;
     }
     // Don't let video end while scrubbing.
-    if (newTime == this.player_.duration()) {
+    if (newTime === this.player_.duration()) {
         newTime = newTime - 0.1;
     }
 
@@ -76,17 +76,18 @@ const onPlayerReady = (player, options) => {
     newLink.className = 'label onair';
   }
 
-  let clickHandler = function () {
+  let clickHandler = function() {
     player.pause();
     player.currentTime(0);
-    //player.load();
+
     player.play();
   };
 
-  if(newLink.addEventListener) // DOM method
+  if (newLink.addEventListener) { // DOM method
     newLink.addEventListener('click', clickHandler, false);
-  else if(anchor.attachEvent) // this is for IE, because it doesn't support addEventListener
-    newLink.attachEvent('onclick', function(){ return clickHandler.apply(newLink, [window.event])});
+  } else if (newLink.attachEvent) { // this is for IE, because it doesn't support addEventListener
+    newLink.attachEvent('onclick', function() { return clickHandler.apply(newLink, [ window.event ]); });
+  }
 
   btnLiveEl.appendChild(newLink);
 
@@ -103,15 +104,6 @@ const onTimeUpdate = (player, e) => {
   player.duration(player.currentTime());
 };
 
-const onPlay = (player, e) => {
-  let btnLiveEl = document.getElementById('liveButton');
-
-  if (btnLiveEl) {
-    btnLiveEl.className = 'label onair';
-    btnLiveEl.innerHTML = '<span class="vjs-control-text">Stream Type</span>LIVE';
-  }
-};
-
 /**
  * A video.js plugin.
  *
@@ -125,7 +117,7 @@ const onPlay = (player, e) => {
  *           An object of options left to the plugin author to define.
  */
 const dvrseekbar = function(options) {
-  const player  = this;
+  const player = this;
 
   if (!options) {
     options = defaults;
@@ -133,15 +125,20 @@ const dvrseekbar = function(options) {
 
   let dvrSeekBar = new DVRSeekBar(player, options);
 
-  //Register custom DVRSeekBar Component:
-  videojs.registerComponent('DVRSeekBar', DVRSeekBar);
+  // Register custom DVRSeekBar Component:
+  videojs.registerComponent('DVRSeekBar', dvrSeekBar);
 
   this.on('timeupdate', (e) => {
     onTimeUpdate(this, e);
   });
 
   this.on('play', (e) => {
-    onPlay(this, e);
+    let btnLiveEl = document.getElementById('liveButton');
+
+    if (btnLiveEl) {
+      btnLiveEl.className = 'label onair';
+      btnLiveEl.innerHTML = '<span class="vjs-control-text">Stream Type</span>LIVE';
+    }
   });
 
   this.on('pause', (e) => {
@@ -151,12 +148,12 @@ const dvrseekbar = function(options) {
   });
 
   this.on('seeked', (e) => {
-    let btnLiveEl = document.getElementById('liveButton');
+    /* let btnLiveEl = document.getElementById('liveButton');
 
     if (player.duration() < player.currentTime()) {
         btnLiveEl.className = 'label';
         btnLiveEl.innerHTML = '<span class="vjs-control-text">Stream Type</span>DVR';
-    }
+    } */
   });
 
   this.ready(() => {
