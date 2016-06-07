@@ -65,7 +65,7 @@ const onPlayerReady = (player, options) => {
 
   // ADD Live Button:
   let btnLiveEl = document.createElement('div'),
-    newLink = document.createElement('a');
+    newLink = document.createElement('button');
 
   btnLiveEl.className = 'vjs-live-button vjs-control';
 
@@ -73,7 +73,7 @@ const onPlayerReady = (player, options) => {
   newLink.id = 'liveButton';
 
   if (!player.paused()) {
-    newLink.className = 'label onair';
+    newLink.className = 'vjs-live-label onair';
   }
 
   /*
@@ -137,7 +137,7 @@ const dvrseekbar = function(options) {
     let btnLiveEl = document.getElementById('liveButton');
 
     if (btnLiveEl) {
-      btnLiveEl.className = 'label onair';
+      btnLiveEl.className = 'vjs-live-label onair';
       btnLiveEl.innerHTML = '<span class="vjs-control-text">Stream Type</span>LIVE';
     }
   });
@@ -152,7 +152,7 @@ const dvrseekbar = function(options) {
     /* let btnLiveEl = document.getElementById('liveButton');
 
     if (player.duration() < player.currentTime()) {
-        btnLiveEl.className = 'label';
+        btnLiveEl.className = 'vjs-live-label';
         btnLiveEl.innerHTML = '<span class="vjs-control-text">Stream Type</span>DVR';
     } */
   });
