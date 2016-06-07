@@ -1,6 +1,6 @@
 {
   "name": "videojs-dvrseekbar",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "A Video.js plugin for Seekbar with DVR support.",
   "repository": {
     "type": "git",
