@@ -8,15 +8,19 @@
 </head>
 <body>
   <h1>Video.js DVRSeekbar plugin</h1>
-  <video id="videojs-dvrseekbar-player" class="video-js vjs-default-skin" controls>
+  <!-- responsive classes: vjs-4-3 vjs-16-9 -->
+  <video id="videojs-dvrseekbar-player" class="video-js vjs-default-skin"
+    controls preload>
   </video>
   <ul>
     <li><a href="/test/">Run unit tests in browser.</a></li>
 
   </ul>
   <script src="/node_modules/video.js/dist/video.js"></script>
+  <!--
   <script src="/node_modules/hls.js/dist/hls.js"></script>
-  <script src="/src/plugins-forked/videojs-hlsjs/videojs-hlsjs.js"></script>
+  -->
+  <script src="/node_modules/videojs-contrib-hls/dist/videojs-contrib-hls.js"></script>
   <script src="/dist/videojs-dvrseekbar.js"></script>
   <script>
     (function(window, videojs) {
@@ -30,17 +34,32 @@
             isLive: true
           };
 
-      var player = window.player = videojs('videojs-dvrseekbar-player'),
+      var player =  null,
+      playerOptions = {
+        html5: {
+          hls: {
+            withCredentials: false
+          }
+        }
+      },
       content = sampleLive;
 
       if (content.isLive) {
-        player.dvrseekbar();
+
+        playerOptions.controlBar = {
+          volumeMenuButton: { 'vertical': true, inline: false }
+        };
+
+        player = window.player = videojs('videojs-dvrseekbar-player', playerOptions, function () {
+          player.src(content);
+          player.dvrseekbar();
+          player.play();
+        });
+
       } else {
         console.log('The Content is not Live, DVR Seekbar support Not Enabled!');
+        player = window.player = videojs('videojs-dvrseekbar-player');
       }
-
-      player.src(content);
-      player.play();
 
     }(window, window.videojs));
   </script>
