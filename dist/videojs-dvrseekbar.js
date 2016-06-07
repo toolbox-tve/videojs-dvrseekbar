@@ -1,6 +1,6 @@
 /**
  * videojs-dvrseekbar
- * @version 0.2.3
+ * @version 0.2.4
  * @copyright 2016 ToolBox-tve
  * @license Apache-2.0
  */
@@ -112,23 +112,18 @@ var onPlayerReady = function onPlayerReady(player, options) {
     newLink.className = 'label onair';
   }
 
-  var clickHandler = function clickHandler() {
+  /*
+  let clickHandler = function() {
     player.pause();
     player.currentTime(0);
-
-    player.play();
+     player.play();
   };
-
-  if (newLink.addEventListener) {
-    // DOM method
+   if (newLink.addEventListener) { // DOM method
     newLink.addEventListener('click', clickHandler, false);
-  } else if (newLink.attachEvent) {
-    // this is for IE, because it doesn't support addEventListener
-    newLink.attachEvent('onclick', function () {
-      return clickHandler.apply(newLink, [window.event]);
-    });
+  } else if (newLink.attachEvent) { // this is for IE, because it doesn't support addEventListener
+    newLink.attachEvent('onclick', function() { return clickHandler.apply(newLink, [ window.event ]); });
   }
-
+  */
   btnLiveEl.appendChild(newLink);
 
   var controlBar = document.getElementsByClassName('vjs-control-bar')[0],
@@ -206,7 +201,7 @@ var dvrseekbar = function dvrseekbar(options) {
 _videoJs2['default'].plugin('dvrseekbar', dvrseekbar);
 
 // Include the version number.
-dvrseekbar.VERSION = '0.2.3';
+dvrseekbar.VERSION = '0.2.4';
 
 exports['default'] = dvrseekbar;
 module.exports = exports['default'];

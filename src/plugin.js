@@ -76,6 +76,7 @@ const onPlayerReady = (player, options) => {
     newLink.className = 'label onair';
   }
 
+  /*
   let clickHandler = function() {
     player.pause();
     player.currentTime(0);
@@ -88,7 +89,7 @@ const onPlayerReady = (player, options) => {
   } else if (newLink.attachEvent) { // this is for IE, because it doesn't support addEventListener
     newLink.attachEvent('onclick', function() { return clickHandler.apply(newLink, [ window.event ]); });
   }
-
+  */
   btnLiveEl.appendChild(newLink);
 
   let controlBar = document.getElementsByClassName('vjs-control-bar')[0],
