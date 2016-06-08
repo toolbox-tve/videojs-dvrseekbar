@@ -1,5 +1,4 @@
 import videojs from 'video.js';
-import { DVRSeekBar } from './dvrseekbar.js';
 // Default options for the plugin.
 const defaults = {
   startTime: 0
@@ -12,7 +11,7 @@ SeekBar.prototype.handleMouseMove = function (e) {
 
     if (this.player_.duration() < this.player_.currentTime()) {
         this.player_.duration(this.player_.currentTime());
-        bufferedTime = this.player_.currentTime() - this.options.startTime;
+        bufferedTime = this.player_.currentTime() - 0;//this.options.startTime;
         newTime = (this.player_.currentTime() - bufferedTime) + (this.calculateDistance(e) * bufferedTime); // only search in buffer
 
     } else {
@@ -65,10 +64,9 @@ const onPlayerReady = (player, options) => {
     newLink.className = 'label onair';
   }
 
-  /*
-  let clickHandler = function() {
-    player.pause();
-    player.currentTime(0);
+
+  let clickHandler = function(e) {
+    player.currentTime(player.seekable().end(0));
 
     player.play();
   };
@@ -78,7 +76,7 @@ const onPlayerReady = (player, options) => {
   } else if (newLink.attachEvent) { // this is for IE, because it doesn't support addEventListener
     newLink.attachEvent('onclick', function() { return clickHandler.apply(newLink, [ window.event ]); });
   }
-  */
+
   btnLiveEl.appendChild(newLink);
 
   let controlBar = document.getElementsByClassName('vjs-control-bar')[0],
@@ -91,7 +89,7 @@ const onPlayerReady = (player, options) => {
 
 const onTimeUpdate = (player, e) => {
 
-  player.duration(player.currentTime());
+  player.duration(player.seekable().end(0));
 };
 
 /**
@@ -112,11 +110,6 @@ const dvrseekbar = function(options) {
   if (!options) {
     options = defaults;
   }
-
-  let dvrSeekBar = new DVRSeekBar(player, options);
-
-  // Register custom DVRSeekBar Component:
-  videojs.registerComponent('DVRSeekBar', dvrSeekBar);
 
   this.on('timeupdate', (e) => {
     onTimeUpdate(this, e);

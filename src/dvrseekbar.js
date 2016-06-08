@@ -15,7 +15,7 @@ class DVRSeekBar extends SeekBar {
 
   handleMouseMove(e) {
     let bufferedTime, newTime;
-
+    debugger;
     if (this.player_.duration() < this.player_.currentTime()) {
         this.player_.duration(this.player_.currentTime());
         bufferedTime = this.player_.currentTime() - this.options.startTime;
