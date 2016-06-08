@@ -59,5 +59,7 @@ require(['video.js', 'videojs-dvrseekbar'], function(videojs) {
 
 Apache-2.0. Copyright (c) ToolBox-tve
 
+## VideoJS plugin standards
+See https://github.com/videojs/generator-videojs-plugin/blob/master/docs/standards.md
 
 [videojs]: http://videojs.com/

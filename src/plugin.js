@@ -3,46 +3,39 @@ import videojs from 'video.js';
 const defaults = {
   startTime: 0
 };
+
 const SeekBar = videojs.getComponent('SeekBar');
 
-/**
- * SeekBar with DVR support class
- */
-class DVRSeekBar extends SeekBar {
+SeekBar.prototype.dvrTotalTime = function(player) {
+  let time = player.seekable();
 
-  /** @constructor */
-  constructor(player, options) {
+  return  time && time.length ? time.end(0) - time.start(0) : 0;
+};
 
-    super(player, options);
-    this.startTime = options.startTime;
-  }
+SeekBar.prototype.handleMouseMove = function (e) {
+  let bufferedTime, newTime;
 
-  handleMouseMove(e) {
-    let bufferedTime, newTime;
+  bufferedTime = newTime = this.player_.seekable();
 
-    if (this.player_.duration() < this.player_.currentTime()) {
-        this.player_.duration(this.player_.currentTime());
-        bufferedTime = this.player_.currentTime() - this.options.startTime;
-        newTime = (this.player_.currentTime() - bufferedTime) + (this.calculateDistance(e) * bufferedTime); // only search in buffer
+  if (bufferedTime && bufferedTime.length) {
+    for (newTime = bufferedTime.start(0) + this.calculateDistance(e) * this.dvrTotalTime(this.player_); newTime >= bufferedTime.end(0);)
+      newTime -= .1;
 
-    } else {
-        bufferedTime = this.player_.duration() - this.options.startTime;
-        newTime = (this.player_.duration() - bufferedTime) + (this.calculateDistance(e) * bufferedTime); // only search in buffer
-
-    }
-    if (newTime < this.options.startTime) { // if calculated time was not played once.
-        newTime = this.options.startTime;
-    }
-    // Don't let video end while scrubbing.
-    if (newTime === this.player_.duration()) {
-        newTime = newTime - 0.1;
-    }
-
-    // Set new time (tell player to seek to new time)
     this.player_.currentTime(newTime);
   }
+};
 
-}
+SeekBar.prototype.updateAriaAttributes = function () {
+    let a, c, d = this.player_.seekable();
+
+    d && d.length && (a = this.player_.scrubbing ? this.player_.getCache().currentTime : this.player_.currentTime(),
+    c = d.end(0) - a, c = 0 > c ? 0 : c,
+    this.el_.setAttribute('aria-valuenow',
+      Math.round(100 * this.getPercent(), 2)),
+    this.el_.setAttribute('aria-valuetext',
+      (0 === a ? "" : "-") + videojs.formatTime(c, d.end(0))));
+};
+
 
 /**
  * Function to invoke when the player is ready.
@@ -76,10 +69,9 @@ const onPlayerReady = (player, options) => {
     newLink.className = 'vjs-live-label onair';
   }
 
-  /*
-  let clickHandler = function() {
-    player.pause();
-    player.currentTime(0);
+
+  let clickHandler = function(e) {
+    player.currentTime(player.seekable().end(0));
 
     player.play();
   };
@@ -89,7 +81,7 @@ const onPlayerReady = (player, options) => {
   } else if (newLink.attachEvent) { // this is for IE, because it doesn't support addEventListener
     newLink.attachEvent('onclick', function() { return clickHandler.apply(newLink, [ window.event ]); });
   }
-  */
+
   btnLiveEl.appendChild(newLink);
 
   let controlBar = document.getElementsByClassName('vjs-control-bar')[0],
@@ -101,8 +93,27 @@ const onPlayerReady = (player, options) => {
 };
 
 const onTimeUpdate = (player, e) => {
+  let time = player.seekable();
+  let btnLiveEl = document.getElementById('liveButton');
 
-  player.duration(player.currentTime());
+  if (!time.length) {
+    return;
+  }
+
+  /*let time1 = time && time.length ? time.end(0) - time.start(0) : 0;
+
+  if(time1 > 0) {
+    player.duration(time1 + 2);
+  }
+*/
+  player.duration(player.seekable().end(0));
+
+  if (time.end(0) - player.currentTime() < 30) {
+
+      btnLiveEl.className = 'label onair';
+  } else {
+      btnLiveEl.className = 'label';
+  }
 };
 
 /**
@@ -124,37 +135,18 @@ const dvrseekbar = function(options) {
     options = defaults;
   }
 
-  let dvrSeekBar = new DVRSeekBar(player, options);
-
-  // Register custom DVRSeekBar Component:
-  videojs.registerComponent('DVRSeekBar', dvrSeekBar);
-
   this.on('timeupdate', (e) => {
     onTimeUpdate(this, e);
   });
 
-  this.on('play', (e) => {
-    let btnLiveEl = document.getElementById('liveButton');
 
-    if (btnLiveEl) {
-      btnLiveEl.className = 'vjs-live-label onair';
-      btnLiveEl.innerHTML = '<span class="vjs-control-text">Stream Type</span>LIVE';
-    }
-  });
+  this.on('play', (e) => {});
+
 
   this.on('pause', (e) => {
     let btnLiveEl = document.getElementById('liveButton');
 
-    btnLiveEl.className = '';
-  });
-
-  this.on('seeked', (e) => {
-    /* let btnLiveEl = document.getElementById('liveButton');
-
-    if (player.duration() < player.currentTime()) {
-        btnLiveEl.className = 'vjs-live-label';
-        btnLiveEl.innerHTML = '<span class="vjs-control-text">Stream Type</span>DVR';
-    } */
+    btnLiveEl.className = 'label';
   });
 
   this.ready(() => {
