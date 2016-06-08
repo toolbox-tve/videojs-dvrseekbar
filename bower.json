@@ -1,0 +1,17 @@
+{
+  "name": "videojs-dvrseekbar",
+  "author": "toolBox-tve",
+  "license": "Apache-2.0",
+  "main": [
+    "dist/videojs-dvrseekbar.css",
+    "dist/videojs-dvrseekbar.min.js"
+  ],
+  "keywords": [
+    "videojs",
+    "videojs-plugin",
+    "player",
+    "video",
+    "DVR"
+  ]
+}
+
