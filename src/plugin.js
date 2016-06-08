@@ -5,30 +5,25 @@ const defaults = {
 };
 
 const SeekBar = videojs.getComponent('SeekBar');
+const SeekHandle = videojs.getComponent('SeekHandle');
+
+SeekBar.prototype.dvrTotalTime = function(player) {
+  let time = player.seekable();
+
+  return  time && time.length ? time.end(0) - time.start(0) : 0;
+};
 
 SeekBar.prototype.handleMouseMove = function (e) {
   let bufferedTime, newTime;
 
-    if (this.player_.duration() < this.player_.currentTime()) {
-        this.player_.duration(this.player_.currentTime());
-        bufferedTime = this.player_.currentTime() - 0;//this.options.startTime;
-        newTime = (this.player_.currentTime() - bufferedTime) + (this.calculateDistance(e) * bufferedTime); // only search in buffer
+  bufferedTime = newTime = this.player_.seekable();
 
-    } else {
-        bufferedTime = this.player_.duration() - this.options.startTime;
-        newTime = (this.player_.duration() - bufferedTime) + (this.calculateDistance(e) * bufferedTime); // only search in buffer
+  if (bufferedTime && bufferedTime.length) {
+    for (newTime = bufferedTime.start(0) + this.calculateDistance(e) * this.dvrTotalTime(this.player_); newTime >= bufferedTime.end(0);)
+      newTime -= .1;
 
-    }
-    if (newTime < this.options.startTime) { // if calculated time was not played once.
-        newTime = this.options.startTime;
-    }
-    // Don't let video end while scrubbing.
-    if (newTime === this.player_.duration()) {
-        newTime = newTime - 0.1;
-    }
-
-    // Set new time (tell player to seek to new time)
     this.player_.currentTime(newTime);
+  }
 };
 
 
@@ -88,6 +83,12 @@ const onPlayerReady = (player, options) => {
 };
 
 const onTimeUpdate = (player, e) => {
+
+  /*let time = player.seekable();
+  time = time && time.length ? time.end(0) - time.start(0) : 0;
+  if(time > 0) {
+    player.duration(time + 2);
+  }*/
 
   player.duration(player.seekable().end(0));
 };
