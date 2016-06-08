@@ -84,13 +84,13 @@ const onPlayerReady = (player, options) => {
 
 const onTimeUpdate = (player, e) => {
 
-  /*let time = player.seekable();
+  let time = player.seekable();
   time = time && time.length ? time.end(0) - time.start(0) : 0;
   if(time > 0) {
     player.duration(time + 2);
-  }*/
+  }
 
-  player.duration(player.seekable().end(0));
+  //player.duration(player.seekable().end(0));
 };
 
 /**
