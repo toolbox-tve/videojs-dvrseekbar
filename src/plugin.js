@@ -1,24 +1,14 @@
 import videojs from 'video.js';
+import { DVRSeekBar } from './dvrseekbar.js';
 // Default options for the plugin.
 const defaults = {
   startTime: 0
 };
+
 const SeekBar = videojs.getComponent('SeekBar');
 
-/**
- * SeekBar with DVR support class
- */
-class DVRSeekBar extends SeekBar {
-
-  /** @constructor */
-  constructor(player, options) {
-
-    super(player, options);
-    this.startTime = options.startTime;
-  }
-
-  handleMouseMove(e) {
-    let bufferedTime, newTime;
+SeekBar.prototype.handleMouseMove = function (e) {
+  let bufferedTime, newTime;
 
     if (this.player_.duration() < this.player_.currentTime()) {
         this.player_.duration(this.player_.currentTime());
@@ -40,9 +30,8 @@ class DVRSeekBar extends SeekBar {
 
     // Set new time (tell player to seek to new time)
     this.player_.currentTime(newTime);
-  }
+};
 
-}
 
 /**
  * Function to invoke when the player is ready.
