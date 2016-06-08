@@ -5,7 +5,6 @@ const defaults = {
 };
 
 const SeekBar = videojs.getComponent('SeekBar');
-const SeekHandle = videojs.getComponent('SeekHandle');
 
 SeekBar.prototype.dvrTotalTime = function(player) {
   let time = player.seekable();
@@ -26,6 +25,26 @@ SeekBar.prototype.handleMouseMove = function (e) {
   }
 };
 
+SeekBar.prototype.updateAriaAttributes = function () {
+    let a, c, d = this.player_.seekable();
+
+    d && d.length && (a = this.player_.scrubbing ? this.player_.getCache().currentTime : this.player_.currentTime(),
+    c = d.end(0) - a, c = 0 > c ? 0 : c,
+    this.el_.setAttribute('aria-valuenow',
+      Math.round(100 * this.getPercent(), 2)),
+    this.el_.setAttribute('aria-valuetext',
+      (0 === a ? "" : "-") + videojs.formatTime(c, d.end(0))));
+};
+
+/*SeekHandle.prototype.updateContent = function () {
+  let time = this.player_.seekable();
+
+  time = time && time.length ? time.end(0) - time.start(0) : 0;
+
+  if(time > 0) {
+    player.duration(time + 2);
+  }
+};*/
 
 /**
  * Function to invoke when the player is ready.
@@ -83,14 +102,27 @@ const onPlayerReady = (player, options) => {
 };
 
 const onTimeUpdate = (player, e) => {
-
   let time = player.seekable();
-  time = time && time.length ? time.end(0) - time.start(0) : 0;
-  if(time > 0) {
-    player.duration(time + 2);
+  let btnLiveEl = document.getElementById('liveButton');
+
+  if (!time.length) {
+    return;
   }
 
-  //player.duration(player.seekable().end(0));
+  /*let time1 = time && time.length ? time.end(0) - time.start(0) : 0;
+
+  if(time1 > 0) {
+    player.duration(time1 + 2);
+  }
+*/
+  player.duration(player.seekable().end(0));
+
+  if (time.end(0) - player.currentTime() < 30) {
+
+      btnLiveEl.className = 'label onair';
+  } else {
+      btnLiveEl.className = 'label';
+  }
 };
 
 /**
@@ -116,28 +148,12 @@ const dvrseekbar = function(options) {
     onTimeUpdate(this, e);
   });
 
-  this.on('play', (e) => {
-    let btnLiveEl = document.getElementById('liveButton');
-
-    if (btnLiveEl) {
-      btnLiveEl.className = 'label onair';
-      btnLiveEl.innerHTML = '<span class="vjs-control-text">Stream Type</span>LIVE';
-    }
-  });
+  this.on('play', (e) => {});
 
   this.on('pause', (e) => {
     let btnLiveEl = document.getElementById('liveButton');
 
-    btnLiveEl.className = '';
-  });
-
-  this.on('seeked', (e) => {
-    /* let btnLiveEl = document.getElementById('liveButton');
-
-    if (player.duration() < player.currentTime()) {
-        btnLiveEl.className = 'label';
-        btnLiveEl.innerHTML = '<span class="vjs-control-text">Stream Type</span>DVR';
-    } */
+    btnLiveEl.className = 'label';
   });
 
   this.ready(() => {
