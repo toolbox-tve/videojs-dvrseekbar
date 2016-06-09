@@ -32,7 +32,12 @@
             type:'application/x-mpegURL',
             src: 'http://media.blacktrash.org/stsp.m3u8',
             isLive: true
-          };
+          },
+          liveContent = {
+          src: 'https://nickelodeonhls-lh.akamaihd.net/i/nickHLS_1@352363/master.m3u8?hdnea=st=1465313866~exp=1465918666~acl=/*~hmac=47bbab0618b185d73f35f9822bbe1e0e07c450ba8a9cb3bf6076db4f3530be65',
+          type: 'application/x-mpegURL',
+          isLive: true
+        };
 
       var player =  null,
       playerOptions = {
@@ -42,7 +47,7 @@
           }
         }
       },
-      content = sampleLive;
+      content = liveContent;
 
       if (content.isLive) {
 

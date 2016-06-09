@@ -4,48 +4,6 @@ const defaults = {
   startTime: 0
 };
 
-const SeekBar = videojs.getComponent('SeekBar');
-
-SeekBar.prototype.dvrTotalTime = function(player) {
-  let time = player.seekable();
-
-  return  time && time.length ? time.end(0) - time.start(0) : 0;
-};
-
-SeekBar.prototype.handleMouseMove = function (e) {
-  let bufferedTime, newTime;
-
-  bufferedTime = newTime = this.player_.seekable();
-
-  if (bufferedTime && bufferedTime.length) {
-    for (newTime = bufferedTime.start(0) + this.calculateDistance(e) * this.dvrTotalTime(this.player_); newTime >= bufferedTime.end(0);)
-      newTime -= .1;
-
-    this.player_.currentTime(newTime);
-  }
-};
-
-SeekBar.prototype.updateAriaAttributes = function () {
-    let a, c, d = this.player_.seekable();
-
-    d && d.length && (a = this.player_.scrubbing ? this.player_.getCache().currentTime : this.player_.currentTime(),
-    c = d.end(0) - a, c = 0 > c ? 0 : c,
-    this.el_.setAttribute('aria-valuenow',
-      Math.round(100 * this.getPercent(), 2)),
-    this.el_.setAttribute('aria-valuetext',
-      (0 === a ? "" : "-") + videojs.formatTime(c, d.end(0))));
-};
-
-/*SeekHandle.prototype.updateContent = function () {
-  let time = this.player_.seekable();
-
-  time = time && time.length ? time.end(0) - time.start(0) : 0;
-
-  if(time > 0) {
-    player.duration(time + 2);
-  }
-};*/
-
 /**
  * Function to invoke when the player is ready.
  *
@@ -67,7 +25,7 @@ const onPlayerReady = (player, options) => {
 
   // ADD Live Button:
   let btnLiveEl = document.createElement('div'),
-    newLink = document.createElement('a');
+    newLink = document.createElement('button');
 
   btnLiveEl.className = 'vjs-live-button vjs-control';
 
@@ -75,7 +33,7 @@ const onPlayerReady = (player, options) => {
   newLink.id = 'liveButton';
 
   if (!player.paused()) {
-    newLink.className = 'label onair';
+    newLink.className = 'vjs-live-label onair';
   }
 
 
@@ -105,7 +63,9 @@ const onTimeUpdate = (player, e) => {
   let time = player.seekable();
   let btnLiveEl = document.getElementById('liveButton');
 
-  if (!time.length) {
+  // When any tech is disposed videojs will trigger a 'timeupdate' event when calling stopTrackingCurrentTime()
+  // If the tech does not have a seekable() method, time will be undefined
+  if (!time || !time.length) {
     return;
   }
 
@@ -115,14 +75,15 @@ const onTimeUpdate = (player, e) => {
     player.duration(time1 + 2);
   }
 */
-  player.duration(player.seekable().end(0));
 
   if (time.end(0) - player.currentTime() < 30) {
 
-      btnLiveEl.className = 'label onair';
+      btnLiveEl.className = 'vjs-live-label onair';
   } else {
-      btnLiveEl.className = 'label';
+      btnLiveEl.className = 'vjs-live-label';
   }
+
+  player.duration(player.seekable().end(0));
 };
 
 /**
@@ -139,6 +100,37 @@ const onTimeUpdate = (player, e) => {
  */
 const dvrseekbar = function(options) {
   const player = this;
+  const SeekBar = videojs.getComponent('SeekBar');
+
+  SeekBar.prototype.dvrTotalTime = function(player) {
+    let time = player.seekable();
+
+    return  time && time.length ? time.end(0) - time.start(0) : 0;
+  };
+
+  SeekBar.prototype.handleMouseMove = function (e) {
+    let bufferedTime, newTime;
+
+    bufferedTime = newTime = this.player_.seekable();
+
+    if (bufferedTime && bufferedTime.length) {
+      for (newTime = bufferedTime.start(0) + this.calculateDistance(e) * this.dvrTotalTime(this.player_); newTime >= bufferedTime.end(0);)
+        newTime -= .1;
+
+      this.player_.currentTime(newTime);
+    }
+  };
+
+  SeekBar.prototype.updateAriaAttributes = function () {
+      let a, c, d = this.player_.seekable();
+
+      d && d.length && (a = this.player_.scrubbing ? this.player_.getCache().currentTime : this.player_.currentTime(),
+      c = d.end(0) - a, c = 0 > c ? 0 : c,
+      this.el_.setAttribute('aria-valuenow',
+        Math.round(100 * this.getPercent(), 2)),
+      this.el_.setAttribute('aria-valuetext',
+        (0 === a ? "" : "-") + videojs.formatTime(c, d.end(0))));
+  };
 
   if (!options) {
     options = defaults;
@@ -148,12 +140,14 @@ const dvrseekbar = function(options) {
     onTimeUpdate(this, e);
   });
 
+
   this.on('play', (e) => {});
+
 
   this.on('pause', (e) => {
     let btnLiveEl = document.getElementById('liveButton');
 
-    btnLiveEl.className = 'label';
+    btnLiveEl.className = 'vjs-live-label';
   });
 
   this.ready(() => {
