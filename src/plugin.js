@@ -107,7 +107,6 @@ const onTimeUpdate = (player, e) => {
   }
 */
 
-  console.log(time.end(0) - player.currentTime());
   if (time.end(0) - player.currentTime() < 30) {
 
       btnLiveEl.className = 'vjs-live-label onair';
