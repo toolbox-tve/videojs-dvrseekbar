@@ -23,35 +23,6 @@ var defaults = {
   startTime: 0
 };
 
-var SeekBar = _videoJs2['default'].getComponent('SeekBar');
-
-SeekBar.prototype.dvrTotalTime = function (player) {
-  var time = player.seekable();
-
-  return time && time.length ? time.end(0) - time.start(0) : 0;
-};
-
-SeekBar.prototype.handleMouseMove = function (e) {
-  var bufferedTime = undefined,
-      newTime = undefined;
-
-  bufferedTime = newTime = this.player_.seekable();
-
-  if (bufferedTime && bufferedTime.length) {
-    for (newTime = bufferedTime.start(0) + this.calculateDistance(e) * this.dvrTotalTime(this.player_); newTime >= bufferedTime.end(0);) newTime -= .1;
-
-    this.player_.currentTime(newTime);
-  }
-};
-
-SeekBar.prototype.updateAriaAttributes = function () {
-  var a = undefined,
-      c = undefined,
-      d = this.player_.seekable();
-
-  d && d.length && (a = this.player_.scrubbing ? this.player_.getCache().currentTime : this.player_.currentTime(), c = d.end(0) - a, c = 0 > c ? 0 : c, this.el_.setAttribute('aria-valuenow', Math.round(100 * this.getPercent(), 2)), this.el_.setAttribute('aria-valuetext', (0 === a ? "" : "-") + _videoJs2['default'].formatTime(c, d.end(0))));
-};
-
 /**
  * Function to invoke when the player is ready.
  *
@@ -150,6 +121,34 @@ var dvrseekbar = function dvrseekbar(options) {
   var _this = this;
 
   var player = this;
+  var SeekBar = _videoJs2['default'].getComponent('SeekBar');
+
+  SeekBar.prototype.dvrTotalTime = function (player) {
+    var time = player.seekable();
+
+    return time && time.length ? time.end(0) - time.start(0) : 0;
+  };
+
+  SeekBar.prototype.handleMouseMove = function (e) {
+    var bufferedTime = undefined,
+        newTime = undefined;
+
+    bufferedTime = newTime = this.player_.seekable();
+
+    if (bufferedTime && bufferedTime.length) {
+      for (newTime = bufferedTime.start(0) + this.calculateDistance(e) * this.dvrTotalTime(this.player_); newTime >= bufferedTime.end(0);) newTime -= .1;
+
+      this.player_.currentTime(newTime);
+    }
+  };
+
+  SeekBar.prototype.updateAriaAttributes = function () {
+    var a = undefined,
+        c = undefined,
+        d = this.player_.seekable();
+
+    d && d.length && (a = this.player_.scrubbing ? this.player_.getCache().currentTime : this.player_.currentTime(), c = d.end(0) - a, c = 0 > c ? 0 : c, this.el_.setAttribute('aria-valuenow', Math.round(100 * this.getPercent(), 2)), this.el_.setAttribute('aria-valuetext', (0 === a ? "" : "-") + _videoJs2['default'].formatTime(c, d.end(0))));
+  };
 
   if (!options) {
     options = defaults;
