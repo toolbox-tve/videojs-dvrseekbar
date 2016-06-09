@@ -106,14 +106,16 @@ const onTimeUpdate = (player, e) => {
     player.duration(time1 + 2);
   }
 */
-  player.duration(player.seekable().end(0));
 
+  console.log(time.end(0) - player.currentTime());
   if (time.end(0) - player.currentTime() < 30) {
 
-      btnLiveEl.className = 'label onair';
+      btnLiveEl.className = 'vjs-live-label onair';
   } else {
-      btnLiveEl.className = 'label';
+      btnLiveEl.className = 'vjs-live-label';
   }
+
+  player.duration(player.seekable().end(0));
 };
 
 /**
@@ -146,7 +148,7 @@ const dvrseekbar = function(options) {
   this.on('pause', (e) => {
     let btnLiveEl = document.getElementById('liveButton');
 
-    btnLiveEl.className = 'label';
+    btnLiveEl.className = 'vjs-live-label';
   });
 
   this.ready(() => {
