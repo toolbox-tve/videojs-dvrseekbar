@@ -4,6 +4,56 @@ const defaults = {
   startTime: 0
 };
 
+const SeekBar = videojs.getComponent('SeekBar');
+
+SeekBar.prototype.dvrTotalTime = function(player) {
+  let time = player.seekable();
+
+  return time && time.length ? time.end(0) - time.start(0) : 0;
+};
+
+SeekBar.prototype.handleMouseMove = function(e) {
+  let bufferedTime;
+  let newTime;
+
+  bufferedTime = newTime = this.player_.seekable();
+
+  if (bufferedTime && bufferedTime.length) {
+    let progress = this.calculateDistance(e) * this.dvrTotalTime(this.player_);
+
+    newTime = bufferedTime.start(0) + progress;
+    for (; newTime >= bufferedTime.end(0);) {
+      newTime -= 0.1;
+    }
+
+    this.player_.currentTime(newTime);
+  }
+};
+
+SeekBar.prototype.updateAriaAttributes = function() {
+  const seekableRanges = this.player_.seekable() || [];
+
+  if (seekableRanges.length) {
+    const lastSeekableTime = seekableRanges.end(0);
+    const cachedCTime = this.player_.getCache().currentTime;
+    const currentTime = this.player_.scrubbing ? cachedCTime : this.player_.currentTime();
+    let timeToLastSeekable;
+
+    // Get difference between last seekable moment and current time
+    timeToLastSeekable = lastSeekableTime - currentTime;
+    if (timeToLastSeekable < 0) {
+      timeToLastSeekable = 0;
+    }
+
+    // Update current time control
+    const formattedTime = videojs.formatTime(timeToLastSeekable, lastSeekableTime);
+    const formattedPercentage = Math.round(100 * this.getPercent(), 2);
+
+    this.el_.setAttribute('aria-valuenow', formattedPercentage);
+    this.el_.setAttribute('aria-valuetext', (currentTime ? '' : '-') + formattedTime);
+  }
+};
+
 /**
  * Function to invoke when the player is ready.
  *
@@ -24,8 +74,8 @@ const onPlayerReady = (player, options) => {
   }
 
   // ADD Live Button:
-  let btnLiveEl = document.createElement('div'),
-    newLink = document.createElement('button');
+  let btnLiveEl = document.createElement('div');
+  let newLink = document.createElement('a');
 
   btnLiveEl.className = 'vjs-live-button vjs-control';
 
@@ -36,23 +86,25 @@ const onPlayerReady = (player, options) => {
     newLink.className = 'vjs-live-label onair';
   }
 
-
   let clickHandler = function(e) {
     player.currentTime(player.seekable().end(0));
-
     player.play();
   };
 
-  if (newLink.addEventListener) { // DOM method
+  if (newLink.addEventListener) {
+    // DOM method
     newLink.addEventListener('click', clickHandler, false);
-  } else if (newLink.attachEvent) { // this is for IE, because it doesn't support addEventListener
-    newLink.attachEvent('onclick', function() { return clickHandler.apply(newLink, [ window.event ]); });
+  } else if (newLink.attachEvent) {
+    // this is for IE, because it doesn't support addEventListener
+    newLink.attachEvent('onclick', function() {
+      return clickHandler.apply(newLink, [ window.event ]);
+    });
   }
 
   btnLiveEl.appendChild(newLink);
 
-  let controlBar = document.getElementsByClassName('vjs-control-bar')[0],
-  insertBeforeNode = document.getElementsByClassName('vjs-progress-control')[0];
+  let controlBar = document.getElementsByClassName('vjs-control-bar')[0];
+  let insertBeforeNode = document.getElementsByClassName('vjs-progress-control')[0];
 
   controlBar.insertBefore(btnLiveEl, insertBeforeNode);
 
@@ -69,18 +121,12 @@ const onTimeUpdate = (player, e) => {
     return;
   }
 
-  /*let time1 = time && time.length ? time.end(0) - time.start(0) : 0;
-
-  if(time1 > 0) {
-    player.duration(time1 + 2);
-  }
-*/
+  player.duration(player.seekable().end(0));
 
   if (time.end(0) - player.currentTime() < 30) {
-
-      btnLiveEl.className = 'vjs-live-label onair';
+    btnLiveEl.className = 'label onair';
   } else {
-      btnLiveEl.className = 'vjs-live-label';
+    btnLiveEl.className = 'label';
   }
 
   player.duration(player.seekable().end(0));
@@ -99,39 +145,6 @@ const onTimeUpdate = (player, e) => {
  *           An object of options left to the plugin author to define.
  */
 const dvrseekbar = function(options) {
-  const player = this;
-  const SeekBar = videojs.getComponent('SeekBar');
-
-  SeekBar.prototype.dvrTotalTime = function(player) {
-    let time = player.seekable();
-
-    return  time && time.length ? time.end(0) - time.start(0) : 0;
-  };
-
-  SeekBar.prototype.handleMouseMove = function (e) {
-    let bufferedTime, newTime;
-
-    bufferedTime = newTime = this.player_.seekable();
-
-    if (bufferedTime && bufferedTime.length) {
-      for (newTime = bufferedTime.start(0) + this.calculateDistance(e) * this.dvrTotalTime(this.player_); newTime >= bufferedTime.end(0);)
-        newTime -= .1;
-
-      this.player_.currentTime(newTime);
-    }
-  };
-
-  SeekBar.prototype.updateAriaAttributes = function () {
-      let a, c, d = this.player_.seekable();
-
-      d && d.length && (a = this.player_.scrubbing ? this.player_.getCache().currentTime : this.player_.currentTime(),
-      c = d.end(0) - a, c = 0 > c ? 0 : c,
-      this.el_.setAttribute('aria-valuenow',
-        Math.round(100 * this.getPercent(), 2)),
-      this.el_.setAttribute('aria-valuetext',
-        (0 === a ? "" : "-") + videojs.formatTime(c, d.end(0))));
-  };
-
   if (!options) {
     options = defaults;
   }
