@@ -115,8 +115,9 @@ const onTimeUpdate = (player, e) => {
   let time = player.seekable();
   let btnLiveEl = document.getElementById('liveButton');
 
-  // When any tech is disposed videojs will trigger a 'timeupdate' event when calling stopTrackingCurrentTime()
-  // If the tech does not have a seekable() method, time will be undefined
+  // When any tech is disposed videojs will trigger a 'timeupdate' event
+  // when calling stopTrackingCurrentTime(). If the tech does not have
+  // a seekable() method, time will be undefined
   if (!time || !time.length) {
     return;
   }
@@ -153,9 +154,7 @@ const dvrseekbar = function(options) {
     onTimeUpdate(this, e);
   });
 
-
   this.on('play', (e) => {});
-
 
   this.on('pause', (e) => {
     let btnLiveEl = document.getElementById('liveButton');
