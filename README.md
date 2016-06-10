@@ -55,11 +55,15 @@ require(['video.js', 'videojs-dvrseekbar'], function(videojs) {
 });
 ```
 
-## License
-
-Apache-2.0. Copyright (c) ToolBox-tve
-
-## VideoJS plugin standards
+### VideoJS plugin standards and development flow
 See https://github.com/videojs/generator-videojs-plugin/blob/master/docs/standards.md
 
+### How to version
+Run ```npm version [patch | minor | major]``` to bump package.json version and generate a new release.
+A new tag with the dist files will be created (run ```git push remote tagname``` to publish the tag).
+
 [videojs]: http://videojs.com/
+
+### License
+
+Apache-2.0. Copyright (c) ToolBox-tve
