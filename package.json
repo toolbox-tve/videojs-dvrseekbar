@@ -98,8 +98,10 @@
     "browserify-shim": "^3.8.12",
     "browserify-versionify": "^1.0.6",
     "budo": "^8.0.4",
+    "chg": "^0.3.2",
     "glob": "^6.0.3",
     "global": "^4.3.0",
+    "hls.js": "0.5.24",
     "karma": "^0.13.19",
     "karma-chrome-launcher": "^0.2.2",
     "karma-detect-browsers": "^2.0.2",
@@ -110,12 +112,12 @@
     "mkdirp": "^0.5.1",
     "node-sass": "^3.4.2",
     "npm-run-all": "^1.5.1",
+    "object-assign": "^4.1.0",
     "qunitjs": "^1.21.0",
     "rimraf": "^2.5.1",
     "sinon": "~1.14.0",
     "uglify-js": "^2.6.1",
     "videojs-languages": "^1.0.0",
-    "videojs-standard": "^4.0.0",
-    "chg": "^0.3.2"
+    "videojs-standard": "^4.0.0"
   }
 }

@@ -19,7 +19,8 @@ const nameify = (str) =>
 const srces = {
   css: 'src/plugin.scss',
   js: [
-    'src/plugin.js'
+    //'node_modules/object-assign/index.js',
+    'src/plugin.js',
   ],
   langs: 'lang/*.json',
   tests: glob.sync('test/**/*.spec.js')

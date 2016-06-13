@@ -5,66 +5,73 @@
   <title>videojs-dvrseekbar</title>
   <link href="/node_modules/video.js/dist/video-js.css" rel="stylesheet">
   <link href="/dist/videojs-dvrseekbar.css" rel="stylesheet">
+  <style type="text/css">
+    body {
+      font-family: sans-serif;
+    }
+    h1 {
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
   <h1>Video.js DVRSeekbar plugin</h1>
+
   <!-- responsive classes: vjs-4-3 vjs-16-9 -->
-  <video id="videojs-dvrseekbar-player" class="video-js vjs-default-skin"
-    controls preload>
-  </video>
+  <div style="width: 500px; margin: 0 auto">
+    <video
+      id="videojs-dvrseekbar-player"
+      class="video-js vjs-default-skin vjs-16-9"
+      controls
+      preload="auto"
+      muted>
+    </video>
+  </div>
+
   <ul>
     <li><a href="/test/">Run unit tests in browser.</a></li>
-
   </ul>
+
   <script src="/node_modules/video.js/dist/video.js"></script>
-  <!--
   <script src="/node_modules/hls.js/dist/hls.js"></script>
-  -->
-  <script src="/node_modules/videojs-contrib-hls/dist/videojs-contrib-hls.js"></script>
+  <script src="/vendor/hlsjs.js"></script>
   <script src="/dist/videojs-dvrseekbar.js"></script>
+
   <script>
     (function(window, videojs) {
-      var sample = [
-            { src:'//vjs.zencdn.net/v/oceans.mp4', type:'video/mp4' },
-            { src:'//vjs.zencdn.net/v/oceans.webm', type:'video/webm' }
-          ],
-          sampleLive = {
-            type:'application/x-mpegURL',
-            src: 'http://media.blacktrash.org/stsp.m3u8',
-            isLive: true
-          },
-          liveContent = {
-          src: 'https://nickelodeonhls-lh.akamaihd.net/i/nickHLS_1@352363/master.m3u8?hdnea=st=1465313866~exp=1465918666~acl=/*~hmac=47bbab0618b185d73f35f9822bbe1e0e07c450ba8a9cb3bf6076db4f3530be65',
-          type: 'application/x-mpegURL',
-          isLive: true
-        };
+      var content = {
+        src: 'https://nickelodeonhls-lh.akamaihd.net/i/nickHLS_1@352363/master.m3u8?hdnea=st=1465313866~exp=1465918666~acl=/*~hmac=47bbab0618b185d73f35f9822bbe1e0e07c450ba8a9cb3bf6076db4f3530be65',
+        type: 'application/x-mpegURL',
+        isLive: true,
+      };
 
       var player =  null,
       playerOptions = {
-        html5: {
-          hls: {
-            withCredentials: false
+        hlsjs: {
+          //debug: true,
+          xhrSetup: function(xhr, url) {
+            xhr.withCredentials = false;
           }
-        }
-      },
-      content = liveContent;
+        },
+        inactivityTimeout: 60000
+      };
 
-      if (content.isLive) {
+      playerOptions.controlBar = {
+        fluid: true,
+        volumeMenuButton: { 'vertical': true, inline: false }
+      };
 
-        playerOptions.controlBar = {
-          volumeMenuButton: { 'vertical': true, inline: false }
-        };
+      player = videojs('videojs-dvrseekbar-player', playerOptions);
+      player.dvrseekbar({
+        debug: true
+      });
 
-        player = window.player = videojs('videojs-dvrseekbar-player', playerOptions, function () {
-          player.src(content);
-          player.dvrseekbar();
-          player.play();
-        });
+      player.ready(function () {
+        player.src(content);
+        player.play();
+      });
 
-      } else {
-        console.log('The Content is not Live, DVR Seekbar support Not Enabled!');
-        player = window.player = videojs('videojs-dvrseekbar-player');
-      }
+      window.player = player;
 
     }(window, window.videojs));
   </script>
