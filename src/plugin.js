@@ -168,7 +168,10 @@ const dvrseekbar = function(options) {
 };
 
 // Register the plugin with video.js.
-videojs.plugin('dvrseekbar', dvrseekbar);
+// Updated for video.js 6 - https://github.com/videojs/video.js/wiki/Video.js-6-Migration-Guide
+var registerPlugin = videojs.registerPlugin || videojs.plugin;
+
+registerPlugin('dvrseekbar', dvrseekbar);
 
 // Include the version number.
 dvrseekbar.VERSION = '__VERSION__';
