@@ -9,17 +9,20 @@
 <body>
   <h1>Video.js DVRSeekbar plugin</h1>
   <!-- responsive classes: vjs-4-3 vjs-16-9 -->
-  <video id="videojs-dvrseekbar-player" class="video-js vjs-default-skin"
-    controls preload>
+  <video
+    id="videojs-dvrseekbar-player"
+    class="video-js vjs-default-skin"
+    controls
+    preload
+  >
   </video>
   <ul>
     <li><a href="/test/">Run unit tests in browser.</a></li>
 
   </ul>
   <script src="/node_modules/video.js/dist/video.js"></script>
-  <!--
-  <script src="/node_modules/hls.js/dist/hls.js"></script>
-  -->
+  <script src="/node_modules/dashjs/dist/dash.all.debug.js"></script>
+  <script src="/node_modules/videojs-contrib-dash/dist/videojs-dash.js"></script>
   <script src="/node_modules/videojs-contrib-hls/dist/videojs-contrib-hls.js"></script>
   <script src="/dist/videojs-dvrseekbar.js"></script>
   <script>
@@ -28,15 +31,20 @@
             { src:'//vjs.zencdn.net/v/oceans.mp4', type:'video/mp4' },
             { src:'//vjs.zencdn.net/v/oceans.webm', type:'video/webm' }
           ],
-          sampleLive = {
+          sampleHlsLive = {
             type:'application/x-mpegURL',
             src: 'http://media.blacktrash.org/stsp.m3u8',
             isLive: true
           },
-          liveContent = {
-          src: 'https://nickelodeonhls-lh.akamaihd.net/i/nickHLS_1@352363/master.m3u8?hdnea=st=1465313866~exp=1465918666~acl=/*~hmac=47bbab0618b185d73f35f9822bbe1e0e07c450ba8a9cb3bf6076db4f3530be65',
-          type: 'application/x-mpegURL',
+          sampleDashLiveDVR = {
+          src: 'https://storage.googleapis.com/shaka-live-assets/player-source.mpd',
+          type: 'application/dash+xml',
           isLive: true
+        },
+        test = {
+          src: 'http://vm2.dashif.org/livesim/testpic_2s/Manifest.mpd',
+          isLive: true,
+          type: 'application/dash+xml'
         };
 
       var player =  null,
@@ -47,11 +55,13 @@
           }
         }
       },
-      content = liveContent;
+      content = sampleDashLiveDVR;
 
       if (content.isLive) {
 
         playerOptions.controlBar = {
+          fluid: true,
+          preload: 'metadata',
           volumeMenuButton: { 'vertical': true, inline: false }
         };
 
