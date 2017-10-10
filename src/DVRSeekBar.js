@@ -4,6 +4,7 @@
  * @module DVRSeekBar
  */
 import videojs from 'video.js';
+import window from 'global/window';
 
 const Component = videojs.getComponent('Component');
 
@@ -30,16 +31,23 @@ class DVRSeekBar extends Component {
 
     super(player, options);
 
-    this.bar = this.getChild(this.options_.barName);
+    this.video_ = player.tech_.el_;
+
+    this.isSeeking = false;
+    this.seekTimeout_ = null;
 
     this.on('blur', this.handleBlur);
     this.on('click', this.handleClick);
     this.on('focus', this.handleFocus);
-    /*this.on('input', this.handleInput);
-    this.on('mousedown', this.handleMouseDown);
-    this.on('mouseup', this.handleMouseUp);
-    this.on('touchend', this.handleMouseUp);
-    this.on('touchstart', this.handleMouseDown);*/
+    this.on('input', this.handleSeekInput);
+    this.on('mousedown', this.handleSeekStart);
+    this.el_.addEventListener(
+      'touchstart', 
+      this.handleSeekStart.bind(this), 
+      { passive: true }
+    );
+    this.on('mouseup', this.handleSeekEnd);
+    this.on('touchend', this.handleSeekEnd);
   }
 
 
@@ -78,8 +86,8 @@ class DVRSeekBar extends Component {
    *
    * @listens blur
    */
-  handleBlur() {
-    this.off(this.bar.el_.ownerDocument, 'keydown', this.handleKeyPress);
+  handleBlur(e) {
+    this.off(this.el_.ownerDocument, 'keydown', this.handleKeyPress);
   }
 
   /**
@@ -97,21 +105,23 @@ class DVRSeekBar extends Component {
   /**
    * Handle a `focus` event on this `Slider`.
    *
-   * @param {EventTarget~Event} event
+   * @param {EventTarget~Event} e
    *        The `focus` event that caused this function to run.
    *
    * @listens focus
+   * @memberOf DVRSeekBar
    */
-  handleFocus() {
-   this.on(this.bar.el_.ownerDocument, 'keydown', this.handleKeyPress);
+  handleFocus(e) {
+   this.on(this.el_.ownerDocument, 'keydown', this.handleKeyPress);
   }
+
 
   /**
    * Handle a `keydown` event on the `Slider`. Watches for left, rigth, up, and down
    * arrow keys. This function will only be called when the slider has focus. See
    * {@link Slider#handleFocus} and {@link Slider#handleBlur}.
    *
-   * @param {EventTarget~Event} event
+   * @param {EventTarget~Event} e
    *        the `keydown` event that caused this function to run.
    *
    * @listens keydown
@@ -129,8 +139,79 @@ class DVRSeekBar extends Component {
     }
   }
 
+
+  /**
+   * Handle `input` event on seek in the bar.
+   * 
+   * @listens input 
+   * @memberof DVRSeekBar
+   */
+  handleSeekInput() {
+  
+    if (!this.video_.duration) {
+      // Can't seek yet. Ignore.
+      return;
+    }
+  
+    // Update the UI right away.
+    //this.updateTimeAndSeekRange_();
+
+    // Collect input events and seek when things have been stable for 125ms.
+    if (this.seekTimeout_ !== null) {
+      window.clearTimeout(this.seekTimeout_);
+    }
+
+    this.seekTimeout_ = window.setTimeout(this.handleSeekInputTimeout(), 125);
+  }
+
+  /**
+   * When slider input timeout
+   * 
+   * @memberof DVRSeekBar
+   */
+  handleSeekInputTimeout() {
+
+    this.seekTimeout_ = null;
+    this.video_.currentTime = parseFloat(this.el_.value);
+  }
+
+
+  /**
+   * Handle the mouse down and touch start events
+   * 
+   * @param {EventTarget~Event} e 
+   * @listens mousedown
+   * @listens touchstart 
+   * @memberof DVRSeekBar
+   */
+  handleSeekStart(e) {
+
+    this.isSeeking = true;
+    this.video_.pause();
+  }
+
+
+  /**
+   * Handle the mouse up and touch end events
+   * 
+   * @param {EventTarget~Event} e 
+   * @listens mouseup
+   * @listens touchend
+   * @memberof DVRSeekBar
+   */
+  handleSeekEnd(e) {
+
+    if (this.seekTimeout_ != null) {
+      // They just let go of the seek bar, so end the timer early.
+      window.clearTimeout(this.seekTimeout_);
+      this.handleSeekInputTimeout();
+    }
+
+    this.isSeeking = false;
+    this.video_.play();
+  }
+
 }
 
-Component.registerComponent('DVRseekBar', DVRSeekBar);
 export default DVRSeekBar;
 //////////////////////////
