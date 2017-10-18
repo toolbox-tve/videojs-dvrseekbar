@@ -58,7 +58,7 @@ const dvrseekbarPlugin = function(options) {
       }
     }
   }
-
+  
   if (options.disableDVRslider) {
     this.controlBar.removeChild('progressControl');
     this.controlBar.removeChild('timeDivider');

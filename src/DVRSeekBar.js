@@ -48,6 +48,21 @@ class DVRSeekBar extends Component {
     );
     this.on('mouseup', this.handleSeekEnd);
     this.on('touchend', this.handleSeekEnd);
+
+    if (player.dash) {
+
+      if (player.dash.shakaPlayer) {
+        this.sourceHandler_ = player.dash.shakaPlayer;
+        this.sourceHandler_.addEventListener(
+            'buffering', this.onBufferingStateChange_.bind(this));
+        window.setInterval(this.updateTimeAndSeekRange_.bind(this), 125);
+      }
+
+      if (player.dash.mediaPlayer) {
+        this.sourceHandler_ = player.dash.mediaPlayer;
+      }
+    }
+    
   }
 
 
