@@ -79,7 +79,7 @@ const onPlayerReady = (player, options) => {
 
   btnLiveEl.className = 'vjs-live-button vjs-control';
 
-  newLink.innerHTML = document.getElementsByClassName('vjs-live-display')[0].innerHTML;
+  newLink.innerHTML = document.getElementById(player.id_).getElementsByClassName('vjs-live-display')[0].innerHTML;
   newLink.id = 'liveButton';
 
   if (!player.paused()) {
@@ -103,8 +103,8 @@ const onPlayerReady = (player, options) => {
 
   btnLiveEl.appendChild(newLink);
 
-  let controlBar = document.getElementsByClassName('vjs-control-bar')[0];
-  let insertBeforeNode = document.getElementsByClassName('vjs-progress-control')[0];
+  let controlBar = document.getElementById(player.id_).getElementsByClassName('vjs-control-bar')[0];
+  let insertBeforeNode = document.getElementById(player.id_).getElementsByClassName('vjs-progress-control')[0];
 
   controlBar.insertBefore(btnLiveEl, insertBeforeNode);
 
