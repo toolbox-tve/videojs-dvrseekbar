@@ -68,7 +68,7 @@ const dvrseekbarPlugin = function(options) {
   }
 
   this.one('durationchange', (e) => {
-    const IS_LIVE_STREAM = this.duration() > 1e+300;
+    const IS_LIVE_STREAM = this.duration() > 1000; //1e+300;
 
     if (IS_LIVE_STREAM) {
       this.controlBar.removeChild('progressControl');
@@ -76,6 +76,7 @@ const dvrseekbarPlugin = function(options) {
       this.controlBar.removeChild('durationDisplay');
 
       this.controlBar.liveDisplay.addChild('DVRseekBar');
+      this.controlBar.liveDisplay.show();
     } else {
       if(this.controlBar.liveDisplay.getChild('DVRseekBar') !== undefined) {
         this.controlBar.liveDisplay.removeChild('DVRseekBar');

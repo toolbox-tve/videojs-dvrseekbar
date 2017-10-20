@@ -89,7 +89,8 @@
   "dependencies": {
     "video.js": "^5.20.4",
     "videojs-contrib-dash": "^2.9.1",
-    "videojs-contrib-hls": "^5.11.0"
+    "videojs-contrib-hls": "^5.11.0",
+    "videojs-shaka-player": "github:toolbox-tve/videojs-shaka-player"
   },
   "devDependencies": {
     "babel": "^5.8.38",

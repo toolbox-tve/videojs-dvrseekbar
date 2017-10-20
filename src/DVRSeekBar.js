@@ -5,6 +5,7 @@
  */
 import videojs from 'video.js';
 import window from 'global/window';
+import { buildTimeString } from './utils';
 
 const Component = videojs.getComponent('Component');
 
@@ -24,6 +25,7 @@ class DVRSeekBar extends Component {
   *        The key/value store of player options.
   */
   constructor(player, options) {
+    let sourceHandler = player.tech_.sourceHandler_;
 
     if (!options) {
         options = {};
@@ -32,8 +34,8 @@ class DVRSeekBar extends Component {
     super(player, options);
 
     this.video_ = player.tech_.el_;
-
-    this.isSeeking = false;
+    this.mediaPlayer_ = null;
+    this.isSeeking_ = false;
     this.seekTimeout_ = null;
 
     this.on('blur', this.handleBlur);
@@ -49,20 +51,16 @@ class DVRSeekBar extends Component {
     this.on('mouseup', this.handleSeekEnd);
     this.on('touchend', this.handleSeekEnd);
 
-    if (player.dash) {
+    if (sourceHandler.constructor.name === 'ShakaTech') {
 
-      if (player.dash.shakaPlayer) {
-        this.sourceHandler_ = player.dash.shakaPlayer;
-        this.sourceHandler_.addEventListener(
-            'buffering', this.onBufferingStateChange_.bind(this));
-        window.setInterval(this.updateTimeAndSeekRange_.bind(this), 125);
-      }
+      this.mediaPlayer_ = sourceHandler.mediaPlayer_;
 
-      if (player.dash.mediaPlayer) {
-        this.sourceHandler_ = player.dash.mediaPlayer;
-      }
+      this.mediaPlayer_.addEventListener(
+          'buffering', this.handleBufferingStateChange);
+
+      window.setInterval(this.updateTimeAndSeekRange.bind(this), 125);
     }
-    
+  
   }
 
 
@@ -103,6 +101,19 @@ class DVRSeekBar extends Component {
    */
   handleBlur(e) {
     this.off(this.el_.ownerDocument, 'keydown', this.handleKeyPress);
+  }
+
+  /**
+   * Handle a `buffering` event on current tech mediaPlayer (Shaka).
+   *
+   * @param {EventTarget~Event} event
+   *        The `buffering` event that caused this function to run.
+   *
+   * @listens buffering
+   */
+  handleBufferingStateChange(event) {
+    //this.bufferingSpinner_.style.display =
+    //    event.buffering ? 'inherit' : 'none';
   }
 
   /**
@@ -201,7 +212,7 @@ class DVRSeekBar extends Component {
    */
   handleSeekStart(e) {
 
-    this.isSeeking = true;
+    this.isSeeking_ = true;
     this.video_.pause();
   }
 
@@ -222,8 +233,97 @@ class DVRSeekBar extends Component {
       this.handleSeekInputTimeout();
     }
 
-    this.isSeeking = false;
+    this.isSeeking_ = false;
     this.video_.play();
+  }
+
+  /**
+   * Update bar display data
+   * 
+   * @returns 
+   * @memberof DVRSeekBar
+   */
+  updateTimeAndSeekRange() {
+    // Suppress updates if the controls are hidden.
+    if (!this.player().userActive()) {
+      return;
+    }
+    let inputRange = this.el();
+    let displayTime = this.isSeeking_ ?
+      inputRange.value : this.video_.currentTime;
+    let duration = this.video_.duration;
+    let bufferedLength = this.video_.buffered.length;
+    let bufferedStart = bufferedLength ? 
+      this.video_.buffered.start(0) : 0;
+    let bufferedEnd = bufferedLength ?
+      this.video_.buffered.end(bufferedLength - 1) : 0;
+    let seekRange = this.mediaPlayer_.seekRange();
+    let seekRangeSize = seekRange.end - seekRange.start;
+
+    inputRange.min = seekRange.start;
+    inputRange.max = seekRange.end;
+
+    if (this.mediaPlayer_.isLive()) {
+      // The amount of time we are behind the live edge.
+      var behindLive = Math.floor(seekRange.end - displayTime);
+      displayTime = Math.max(0, behindLive);
+
+      var showHour = seekRangeSize >= 3600;
+      //TODO: habilitar al incluir el timer+LIVE
+      // Consider "LIVE" when less than 1 second behind the live-edge.  Always
+      // show the full time string when seeking, including the leading '-';
+      // otherwise, the time string "flickers" near the live-edge.
+      /*if ((displayTime >= 15) || this.isSeeking_) {
+        this.currentTime_.textContent =
+            '- ' + buildTimeString(displayTime, showHour);
+        this.currentTime_.style.cursor = 'pointer';
+      } else {
+        this.currentTime_.textContent = 'LIVE';
+        this.currentTime_.style.cursor = '';
+      }
+*/
+      if (!this.isSeeking_) {
+        inputRange.value = seekRange.end - displayTime;
+      }
+    } else {
+      var showHour = duration >= 3600;
+
+      //this.currentTime_.textContent = buildTimeString(displayTime, showHour);
+
+      if (!this.isSeeking_) {
+        inputRange.value = displayTime;
+      }
+
+      //this.currentTime_.style.cursor = '';
+    }
+
+    let gradient = ['to right'];
+    
+    if (bufferedLength == 0) {
+      gradient.push('#000 0%');
+    } else {
+      let clampedBufferStart = Math.max(bufferedStart, seekRange.start);
+      let clampedBufferEnd = Math.min(bufferedEnd, seekRange.end);
+
+      let bufferStartDistance = clampedBufferStart - seekRange.start;
+      let bufferEndDistance = clampedBufferEnd - seekRange.start;
+      let playheadDistance = displayTime - seekRange.start;
+
+      // NOTE: the fallback to zero eliminates NaN.
+      let bufferStartFraction = (bufferStartDistance / seekRangeSize) || 0;
+      let bufferEndFraction = (bufferEndDistance / seekRangeSize) || 0;
+      let playheadFraction = (playheadDistance / seekRangeSize) || 0;
+
+      gradient.push('#000 ' + (bufferStartFraction * 100) + '%');
+      gradient.push('#ccc ' + (bufferStartFraction * 100) + '%');
+      gradient.push('#ccc ' + (playheadFraction * 100) + '%');
+      gradient.push('#444 ' + (playheadFraction * 100) + '%');
+      gradient.push('#444 ' + (bufferEndFraction * 100) + '%');
+      gradient.push('#000 ' + (bufferEndFraction * 100) + '%');
+    }
+
+    inputRange.style.background =
+        'linear-gradient(' + gradient.join(',') + ')';
   }
 
 }
