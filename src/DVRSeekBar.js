@@ -44,23 +44,23 @@ class DVRSeekBar extends Component {
     this.on('input', this.handleSeekInput);
     this.on('mousedown', this.handleSeekStart);
     this.el_.addEventListener(
-      'touchstart', 
-      this.handleSeekStart.bind(this), 
+      'touchstart',
+      this.handleSeekStart.bind(this),
       { passive: true }
     );
     this.on('mouseup', this.handleSeekEnd);
     this.on('touchend', this.handleSeekEnd);
-
+    debugger;
     if (sourceHandler.constructor.name === 'ShakaTech') {
 
       this.mediaPlayer_ = sourceHandler.mediaPlayer_;
 
-      this.mediaPlayer_.addEventListener(
-          'buffering', this.handleBufferingStateChange);
+      /*this.mediaPlayer_.addEventListener(
+          'buffering', this.handleBufferingStateChange);*/
 
       window.setInterval(this.updateTimeAndSeekRange.bind(this), 125);
     }
-  
+
   }
 
 
@@ -132,7 +132,7 @@ class DVRSeekBar extends Component {
    * Handle a `focus` event on this `Slider`.
    *
    * @param {EventTarget~Event} e
-   *        The `focus` event that caused this function to run.
+   *        The `focus` event that caused this function to run.c
    *
    * @listens focus
    * @memberOf DVRSeekBar
@@ -168,17 +168,17 @@ class DVRSeekBar extends Component {
 
   /**
    * Handle `input` event on seek in the bar.
-   * 
-   * @listens input 
+   *
+   * @listens input
    * @memberof DVRSeekBar
    */
   handleSeekInput() {
-  
+
     if (!this.video_.duration) {
       // Can't seek yet. Ignore.
       return;
     }
-  
+
     // Update the UI right away.
     //this.updateTimeAndSeekRange_();
 
@@ -192,7 +192,7 @@ class DVRSeekBar extends Component {
 
   /**
    * When slider input timeout
-   * 
+   *
    * @memberof DVRSeekBar
    */
   handleSeekInputTimeout() {
@@ -204,10 +204,10 @@ class DVRSeekBar extends Component {
 
   /**
    * Handle the mouse down and touch start events
-   * 
-   * @param {EventTarget~Event} e 
+   *
+   * @param {EventTarget~Event} e
    * @listens mousedown
-   * @listens touchstart 
+   * @listens touchstart
    * @memberof DVRSeekBar
    */
   handleSeekStart(e) {
@@ -219,8 +219,8 @@ class DVRSeekBar extends Component {
 
   /**
    * Handle the mouse up and touch end events
-   * 
-   * @param {EventTarget~Event} e 
+   *
+   * @param {EventTarget~Event} e
    * @listens mouseup
    * @listens touchend
    * @memberof DVRSeekBar
@@ -239,8 +239,8 @@ class DVRSeekBar extends Component {
 
   /**
    * Update bar display data
-   * 
-   * @returns 
+   *
+   * @returns
    * @memberof DVRSeekBar
    */
   updateTimeAndSeekRange() {
@@ -253,7 +253,7 @@ class DVRSeekBar extends Component {
       inputRange.value : this.video_.currentTime;
     let duration = this.video_.duration;
     let bufferedLength = this.video_.buffered.length;
-    let bufferedStart = bufferedLength ? 
+    let bufferedStart = bufferedLength ?
       this.video_.buffered.start(0) : 0;
     let bufferedEnd = bufferedLength ?
       this.video_.buffered.end(bufferedLength - 1) : 0;
@@ -298,7 +298,7 @@ class DVRSeekBar extends Component {
     }
 
     let gradient = ['to right'];
-    
+
     if (bufferedLength == 0) {
       gradient.push('#000 0%');
     } else {
