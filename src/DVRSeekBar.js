@@ -50,7 +50,7 @@ class DVRSeekBar extends Component {
     );
     this.on('mouseup', this.handleSeekEnd);
     this.on('touchend', this.handleSeekEnd);
-    debugger;
+
     if (sourceHandler.constructor.name === 'ShakaTech') {
 
       this.mediaPlayer_ = sourceHandler.mediaPlayer_;
@@ -326,7 +326,8 @@ class DVRSeekBar extends Component {
         'linear-gradient(' + gradient.join(',') + ')';
   }
 
-}
+};
 
+videojs.registerComponent('DVRseekBar', DVRSeekBar);
 export default DVRSeekBar;
 //////////////////////////

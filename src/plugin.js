@@ -4,9 +4,10 @@
  * @module dvrseekbarPlugin
  */
 import videojs from 'video.js';
-import DVRseekBar from './DVRSeekBar';
+import DVRLiveControl from './dvr-live-control';
+//import DVRseekBar from './DVRSeekBar';
 
-videojs.registerComponent('DVRseekBar', DVRseekBar);
+//videojs.registerComponent('DVRseekBar', DVRseekBar);
 
 // Default options for the plugin.
 const defaults = {
@@ -51,24 +52,30 @@ const dvrseekbarPlugin = function(options) {
       console.warn('${key} option is not a valid property, ignored.');
       delete options[key];
     } else {
-      
+
       if (typeof(options[key]) !== VALID_OPTIONS[key]) {
         console.warn('${key} option value must be ${VALID_OPTIONS[key]}, ignored.');
         delete options [key];
       }
     }
   }
-  
+
+  this.controlBar.removeChild('progressControl');
+  this.controlBar.removeChild('timeDivider');
+  this.controlBar.removeChild('durationDisplay');
+
   if (options.disableDVRslider) {
-    this.controlBar.removeChild('progressControl');
-    this.controlBar.removeChild('timeDivider');
-    this.controlBar.removeChild('durationDisplay');
-    
     return;
   }
 
+  this.controlBar.liveDisplay.hide();
+  this.controlBar.addChild('DVRLiveControl');
+  const fullscreenToggle = this.controlBar.getChild('fullscreenToggle');
+  const dvrLiveControl = this.controlBar.getChild('DVRLiveControl');
+  this.controlBar.el().insertBefore(dvrLiveControl.el(), fullscreenToggle.el());
+/*
   this.one('durationchange', (e) => {
-    const IS_LIVE_STREAM = this.duration() > 1000; //1e+300;
+    const IS_LIVE_STREAM = this.duration() > Infinity; //1e+300;
 
     if (IS_LIVE_STREAM) {
       this.controlBar.removeChild('progressControl');
@@ -86,7 +93,7 @@ const dvrseekbarPlugin = function(options) {
         this.controlBar.addChild('progressControl');
       }
     }
-  });
+  });*/
 };
 
 // Include the version number.

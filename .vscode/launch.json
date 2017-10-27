@@ -10,7 +10,7 @@
             "reAttach": true,
             "name": "on Firefox",
             "port": 9222,
-            "url": "http://localhost/:9999",
+            "url": "http://localhost:9999",
             "webRoot": "${workspaceFolder}/client"
         },
         {
