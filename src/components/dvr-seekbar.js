@@ -5,7 +5,7 @@
  */
 import videojs from 'video.js';
 import window from 'global/window';
-import { buildTimeString } from './utils';
+import { buildTimeString } from '../utils';
 
 const Component = videojs.getComponent('Component');
 

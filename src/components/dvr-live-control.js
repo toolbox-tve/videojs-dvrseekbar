@@ -1,7 +1,8 @@
 /**
  * @file dvr-live-control.js
  */
-import DVRseekBar from './DVRSeekBar';
+import DVRseekBar from './dvr-seekbar';
+import LiveIndicatorToggle from './live-indicator-toggle';
 
 const Component = videojs.getComponent('Component');
 
@@ -38,7 +39,7 @@ class DVRLiveControl extends Component {
    */
   createEl() {
     const el = super.createEl('div', {
-      className: 'vjs-dvr-live-control vjs-control'
+      className: 'vjs-progress-control vjs-control'
     });
 
     return el;
@@ -77,7 +78,8 @@ class DVRLiveControl extends Component {
  */
 DVRLiveControl.prototype.options_ = {
     children: [
-      'DVRseekBar'
+      'DVRseekBar',
+      'LiveIndicatorToggle'
     ]
   };
 

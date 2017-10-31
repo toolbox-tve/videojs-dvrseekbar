@@ -4,10 +4,7 @@
  * @module dvrseekbarPlugin
  */
 import videojs from 'video.js';
-import DVRLiveControl from './dvr-live-control';
-//import DVRseekBar from './DVRSeekBar';
-
-//videojs.registerComponent('DVRseekBar', DVRseekBar);
+import DVRLiveControl from './components/dvr-live-control';
 
 // Default options for the plugin.
 const defaults = {
