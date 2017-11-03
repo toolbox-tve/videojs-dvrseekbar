@@ -80,7 +80,7 @@ const onPlayerReady = (player, options) => {
   btnLiveEl.className = 'vjs-live-button vjs-control';
 
   newLink.innerHTML = document.getElementById(player.id_).getElementsByClassName('vjs-live-display')[0].innerHTML;
-  newLink.id = 'liveButton';
+  newLink.id = 'liveButton-' + player.id_;
 
   if (!player.paused()) {
     newLink.className = 'vjs-live-label onair';
@@ -113,7 +113,7 @@ const onPlayerReady = (player, options) => {
 
 const onTimeUpdate = (player, e) => {
   let time = player.seekable();
-  let btnLiveEl = document.getElementById('liveButton');
+  let btnLiveEl = document.getElementById('liveButton_' + player.id_);
 
   // When any tech is disposed videojs will trigger a 'timeupdate' event
   // when calling stopTrackingCurrentTime(). If the tech does not have
@@ -157,7 +157,7 @@ const dvrseekbar = function(options) {
   this.on('play', (e) => {});
 
   this.on('pause', (e) => {
-    let btnLiveEl = document.getElementById('liveButton');
+    let btnLiveEl = document.getElementById('liveButton_' + this.id_);
 
     btnLiveEl.className = 'vjs-live-label';
   });
