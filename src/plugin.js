@@ -80,7 +80,7 @@ const onPlayerReady = (player, options) => {
   btnLiveEl.className = 'vjs-live-button vjs-control';
 
   newLink.innerHTML = document.getElementById(player.id_).getElementsByClassName('vjs-live-display')[0].innerHTML;
-  newLink.id = 'liveButton-' + player.id_;
+  newLink.id = 'liveButton_' + player.id_;
 
   if (!player.paused()) {
     newLink.className = 'vjs-live-label onair';
