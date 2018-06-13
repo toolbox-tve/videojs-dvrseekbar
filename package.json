@@ -1,6 +1,6 @@
 {
   "name": "videojs-dvrseekbar",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "",
   "main": "dist/videojs-dvrseekbar.cjs.js",
   "module": "dist/videojs-dvrseekbar.es.js",
