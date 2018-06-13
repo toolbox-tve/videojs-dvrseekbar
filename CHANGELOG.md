@@ -1,8 +1,5 @@
-CHANGELOG
-=========
+# [0.0.1]
 
-## HEAD (Unreleased)
-_(none)_
+### Features
 
---------------------
-
+### Bug Fixes
