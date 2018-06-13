@@ -1,4 +1,6 @@
 import videojs from 'video.js';
+import window from 'global/window';
+import document from 'global/document';
 import { version as VERSION } from '../package.json';
 import DVRseekBar from './seekbar';
 
@@ -40,20 +42,21 @@ class Dvrseekbar extends Plugin {
     });
 
     this.player.on('loadeddata', () => {
-      // if (this.dash && this.dash.shakaPlayer) {
+      if (this.dash && this.dash.shakaPlayer) {
         this.ifShakaPlayer();
-      /* } else {
+      } else {
         this.on('timeupdate', e => {
-          onTimeUpdate(this, e);
+          this.onTimeUpdate(this, e);
         });
 
         this.on('pause', e => {
-          let btnLiveEl = document.getElementById('liveButton');
+          const btnLiveEl = document.getElementById('liveButton');
+
           btnLiveEl.className = 'vjs-live-label';
         });
 
-        iDontKnowWhatThisDoes(this, videojs.mergeOptions(defaults, options));
-      } */
+        this.otherSourceHandlers();
+      }
     });
 
     this.one('playing', e => {
@@ -71,11 +74,18 @@ class Dvrseekbar extends Plugin {
     });
   }
 
+  /**
+   * Called when videojs fires timeupdate event
+   *
+   * @param {*} player videojs instance
+   * @param {*} e event
+   * @memberof Dvrseekbar
+   */
   onTimeUpdate(player, e) {
-    let time =
+    const time =
       (player.seekableFromShaka && player.seekableFromShaka()) ||
       player.seekable();
-    let btnLiveEl = document.getElementById('liveButton');
+    const btnLiveEl = document.getElementById('liveButton');
 
     // When any tech is disposed videojs will trigger a 'timeupdate' event
     // when calling stopTrackingCurrentTime(). If the tech does not have
@@ -93,6 +103,11 @@ class Dvrseekbar extends Plugin {
     player.duration(time.end(0));
   }
 
+  /**
+   * Function to call if the source handler is ShakaPlayer
+   *
+   * @memberof Dvrseekbar
+   */
   ifShakaPlayer() {
     const dvrCurrentTime = document.createElement('div');
 
@@ -105,34 +120,38 @@ class Dvrseekbar extends Plugin {
 
     const currentSrc = this.player.tech_ && this.player.tech_.currentSource_ || {};
 
-    // TODO: delete this
-    currentSrc.hasCatchUp = true;
-    //////////////////////
-
     if (currentSrc.hasCatchUp) {
       this.player.controlBar.el_.insertBefore(
         dvrCurrentTime,
         this.player.controlBar.progressControl.el_.nextSibling
       );
 
-      let dvrSeekBar = new DVRseekBar(this.player, this.options);
-      this.player.controlBar.progressControl.el_.appendChild(dvrSeekBar.getEl());
+      const dvrSeekBar = new DVRseekBar(this.player, this.options);
+
+      this.player.controlBar.progressControl.el_.appendChild(
+        dvrSeekBar.getEl()
+      );
     }
   }
 
-  iDontKnowWhatThisDoes(player, options) {
-    player.addClass('vjs-dvrseekbar');
-    player.controlBar.addClass('vjs-dvrseekbar-control-bar');
+  /**
+   * Function to call for others source handlers
+   *
+   * @memberof Dvrseekbar
+   */
+  otherSourceHandlers() {
+    this.player.addClass('vjs-dvrseekbar');
+    this.player.controlBar.addClass('vjs-dvrseekbar-control-bar');
 
-    if (player.controlBar.progressControl) {
-      player.controlBar.progressControl.addClass(
+    if (this.player.controlBar.progressControl) {
+      this.player.controlBar.progressControl.addClass(
         'vjs-dvrseekbar-progress-control'
       );
     }
 
     // ADD Live Button:
-    let btnLiveEl = document.createElement('div');
-    let newLink = document.createElement('a');
+    const btnLiveEl = document.createElement('div');
+    const newLink = document.createElement('a');
 
     btnLiveEl.className = 'vjs-live-button vjs-control';
 
@@ -141,17 +160,17 @@ class Dvrseekbar extends Plugin {
     )[0].innerHTML;
     newLink.id = 'liveButton';
 
-    if (!player.paused()) {
+    if (!this.player.paused()) {
       newLink.className = 'vjs-live-label onair';
     }
 
-    let clickHandler = function(e) {
-      let livePosition =
-        (player.seekableFromShaka && player.seekableFromShaka().end()) ||
-        player.seekable().end(0);
+    const clickHandler = function(e) {
+      const livePosition =
+        (this.player.seekableFromShaka && this.player.seekableFromShaka().end()) ||
+        this.player.seekable().end(0);
 
-      player.currentTime(livePosition - 1);
-      player.play();
+      this.player.currentTime(livePosition - 1);
+      this.player.play();
       e.target.className += ' onair';
     };
 
@@ -167,14 +186,14 @@ class Dvrseekbar extends Plugin {
 
     btnLiveEl.appendChild(newLink);
 
-    let controlBar = document.getElementsByClassName('vjs-control-bar')[0];
-    let insertBeforeNode = document.getElementsByClassName(
+    const controlBar = document.getElementsByClassName('vjs-control-bar')[0];
+    const insertBeforeNode = document.getElementsByClassName(
       'vjs-progress-control'
     )[0];
 
     controlBar.insertBefore(btnLiveEl, insertBeforeNode);
 
-    videojs.log('dvrSeekbar Plugin ENABLED!', options);
+    videojs.log('dvrSeekbar Plugin ENABLED!', this.options);
   }
 }
 

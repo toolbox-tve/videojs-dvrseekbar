@@ -1,4 +1,19 @@
+import window from 'global/window';
+import document from 'global/document';
+
+/**
+ * DVR Seekbar class
+ *
+ * @class DVRSeekBar
+ */
 class DVRSeekBar {
+  /**
+   * Creates an instance of DVRSeekBar.
+   *
+   * @param {*} player videojs instance
+   * @param {*} options dvrseekbar plugin options
+   * @memberof DVRSeekBar
+   */
   constructor(player, options) {
     if (!options) {
       options = {};
@@ -55,25 +70,43 @@ class DVRSeekBar {
     this.firstSeekRangeStart = null;
 
     if (options.flowMode) {
-      //this.video_.addEventListener('playing', this.onFlowModePlaying_.bind(this));
+      // this.video_.addEventListener('playing', this.onFlowModePlaying_.bind(this));
     }
   }
 
+  /**
+   * Get dvrseekbar element
+   *
+   * @return {Element} dvrseekbar element
+   * @memberof DVRSeekBar
+   */
   getEl() {
     return this.dvrSeekBar_;
   }
 
-  /** @private */
+  /**
+   * Called on seek start
+   *
+   * @memberof DVRSeekBar
+   */
   onSeekStart_() {
-    if (!this.enabled_) return;
+    if (!this.enabled_) {
+      return;
+    }
 
     this.isSeeking_ = true;
     this.video_.pause();
   }
 
-  /** @private */
+  /**
+   * Called on seek input
+   *
+   * @memberof DVRSeekBar
+   */
   onSeekInput_() {
-    if (!this.enabled_) return;
+    if (!this.enabled_) {
+      return;
+    }
 
     if (!this.video_.duration) {
       // Can't seek yet.  Ignore.
@@ -84,7 +117,7 @@ class DVRSeekBar {
     this.updateTimeAndSeekRange_();
 
     // Collect input events and seek when things have been stable for 125ms.
-    if (this.seekTimeoutId_ != null) {
+    if (this.seekTimeoutId_ !== null) {
       window.clearTimeout(this.seekTimeoutId_);
     }
     this.seekTimeoutId_ = window.setTimeout(
@@ -93,23 +126,34 @@ class DVRSeekBar {
     );
   }
 
-  /** @private */
+  /**
+   * Seek input timeout
+   *
+   * @memberof DVRSeekBar
+   */
   onSeekInputTimeout_() {
-    let seekVal = parseFloat(this.dvrSeekBar_.value);
-    let lastStartPoint = this.getSeekRange().start;
+    const seekVal = parseFloat(this.dvrSeekBar_.value);
+    const lastStartPoint = this.getSeekRange().start;
 
     this.dvrSeekBar_.min = lastStartPoint;
     this.seekTimeoutId_ = null;
-    //TODO: Hack para evitar que se cuelgue al cambiarse el starter point mientras es en vivo:
+    // TODO: Hack para evitar que se cuelgue al cambiarse
+    // el starter point mientras es en vivo:
     this.video_.currentTime =
       seekVal <= lastStartPoint ? lastStartPoint + 30 : seekVal;
   }
 
-  /** @private */
+  /**
+   * Called on seek end
+   *
+   * @memberof DVRSeekBar
+   */
   onSeekEnd_() {
-    if (!this.enabled_) return;
+    if (!this.enabled_) {
+      return;
+    }
 
-    if (this.seekTimeoutId_ != null) {
+    if (this.seekTimeoutId_ !== null) {
       // They just let go of the seek bar, so end the timer early.
       window.clearTimeout(this.seekTimeoutId_);
       this.onSeekInputTimeout_();
@@ -119,9 +163,15 @@ class DVRSeekBar {
     this.video_.play();
   }
 
-  /** @private */
+  /**
+   * Called onCurrentTimeClick
+   *
+   * @memberof DVRSeekBar
+   */
   onCurrentTimeClick_() {
-    if (!this.enabled_) return;
+    if (!this.enabled_) {
+      return;
+    }
 
     // Jump to LIVE if the user clicks on the current time.
     if (this.player_.isLive && this.player_.isLive()) {
@@ -135,27 +185,32 @@ class DVRSeekBar {
    *
    * @memberof DVRSeekBar
    */
-  onFlowModePlaying_(e) {
+  onFlowModePlaying_() {
     if (this.player_.isLive()) {
       this.video_.currentTime = this.getSeekRange().start + 30;
     }
   }
 
 	/**
-  * @param {Event} event
-  * @private
-  */
+   * Called when buffering state changes
+   *
+   * @param {*} event event
+   * @memberof DVRSeekBar
+   */
   onBufferingStateChange_(event) {
-    //this.bufferingSpinner_.style.display =
-    //    event.buffering ? 'inherit' : 'none';
+    // this.bufferingSpinner_.style.display = event.buffering ? 'inherit' : 'none';
   }
 
 	/**
-  * @return {boolean}
-  * @private
-  */
+   * Returns if dvrseekbar is enabled or not
+   *
+   * @return {boolean} true or false
+   * @memberof DVRSeekBar
+   */
   isOpaque_() {
-    if (!this.enabled_) return false;
+    if (!this.enabled_) {
+      return false;
+    }
 
     return this.vjsPlayer_.userActive();
   }
@@ -177,13 +232,20 @@ class DVRSeekBar {
   * @private
   */
   buildTimeString_(displayTime, showHour) {
-    var h = Math.floor(displayTime / 3600);
-    var m = Math.floor((displayTime / 60) % 60);
-    var s = Math.floor(displayTime % 60);
-    if (s < 10) s = '0' + s;
-    var text = m + ':' + s;
+    const h = Math.floor(displayTime / 3600);
+    const m = Math.floor((displayTime / 60) % 60);
+    let s = Math.floor(displayTime % 60);
+
+    if (s < 10) {
+      s = '0' + s;
+    }
+
+    let text = m + ':' + s;
+
     if (showHour) {
-      if (m < 10) text = '0' + text;
+      if (m < 10) {
+        text = '0' + text;
+      }
       text = h + ':' + text;
     }
     return text;
@@ -200,7 +262,8 @@ class DVRSeekBar {
       return;
     }
 
-    let seekRange = this.getSeekRange();
+    const seekRange = this.getSeekRange();
+
     // Suppress updates if seekable range are not loaded.
     if (seekRange.end === 0 && seekRange.start === seekRange.end) {
       return;
@@ -209,23 +272,19 @@ class DVRSeekBar {
     this.dvrSeekBar_.min = seekRange.start;
     this.dvrSeekBar_.max = seekRange.end;
 
-    let seekRangeSize = this.getMediaSeekRangeSize_();
-    let displayTime = this.isSeeking_
-      ? this.dvrSeekBar_.value
-      : this.video_.currentTime;
-    let duration = this.video_.duration;
-    let bufferedLength = this.video_.buffered.length;
-    let bufferedStart = bufferedLength ? this.video_.buffered.start(0) : 0;
-    let bufferedEnd = bufferedLength
-      ? this.video_.buffered.end(bufferedLength - 1)
-      : 0;
+    const seekRangeSize = this.getMediaSeekRangeSize_();
+    const duration = this.video_.duration;
+    const bufferedLength = this.video_.buffered.length;
+    const bufferedStart = bufferedLength ? this.video_.buffered.start(0) : 0;
+    const bufferedEnd = bufferedLength ? this.video_.buffered.end(bufferedLength - 1) : 0;
+    let displayTime = this.isSeeking_ ? this.dvrSeekBar_.value : this.video_.currentTime;
 
     if (this.player_.isLive && this.player_.isLive()) {
       // The amount of time we are behind the live edge.
-      let behindLive = Math.floor(seekRange.end - displayTime);
-      displayTime = Math.max(0, behindLive);
+      const behindLive = Math.floor(seekRange.end - displayTime);
+      const showHour = seekRangeSize >= 3600;
 
-      let showHour = seekRangeSize >= 3600;
+      displayTime = Math.max(0, behindLive);
 
       // Consider "LIVE" when less than 1 second behind the live-edge.  Always
       // show the full time string when seeking, including the leading '-';
@@ -234,7 +293,7 @@ class DVRSeekBar {
         // Si es con experiencia Flow:
         if (this.options_.flowMode) {
           if (!this.firstSeekRangeStart) {
-            //player.vjsPlayer.currentTime(seekRange.start);
+            // player.vjsPlayer.currentTime(seekRange.start);
           }
           // Fill firstSeekRangeStart
           if (this.isSeeking_ || !this.firstSeekRangeStart) {
@@ -245,12 +304,13 @@ class DVRSeekBar {
             this.video_.currentTime - this.firstSeekRangeStart,
             showHour
           );
-          console.log(
+
+          /* console.log(
             `SeekRangeStart: ${seekRange.start} | SeekRangeEnd: ${seekRange.end} | CurrentTime: ${this
               .video_
               .currentTime} | DisplayTime: ${displayTime} | SeekSize: ${seekRangeSize} | Time: ${this
                 .currentTime_.textContent}`
-          );
+          ); */
         } else {
           this.currentTime_.textContent =
             '- ' + this.buildTimeString_(displayTime, showHour);
@@ -266,7 +326,7 @@ class DVRSeekBar {
         this.dvrSeekBar_.value = seekRange.end - displayTime;
       }
     } else {
-      var showHour = duration >= 3600;
+      const showHour = duration >= 3600;
 
       this.currentTime_.textContent = this.buildTimeString_(
         displayTime,
@@ -280,21 +340,22 @@ class DVRSeekBar {
       this.currentTime_.style.cursor = '';
     }
 
-    let gradient = ['to right'];
-    if (bufferedLength == 0) {
+    const gradient = ['to right'];
+
+    if (bufferedLength === 0) {
       gradient.push('#000 0%');
     } else {
-      var clampedBufferStart = Math.max(bufferedStart, seekRange.start);
-      var clampedBufferEnd = Math.min(bufferedEnd, seekRange.end);
+      const clampedBufferStart = Math.max(bufferedStart, seekRange.start);
+      const clampedBufferEnd = Math.min(bufferedEnd, seekRange.end);
 
-      var bufferStartDistance = clampedBufferStart - seekRange.start;
-      var bufferEndDistance = clampedBufferEnd - seekRange.start;
-      var playheadDistance = displayTime - seekRange.start;
+      const bufferStartDistance = clampedBufferStart - seekRange.start;
+      const bufferEndDistance = clampedBufferEnd - seekRange.start;
+      const playheadDistance = displayTime - seekRange.start;
 
       // NOTE: the fallback to zero eliminates NaN.
-      var bufferStartFraction = bufferStartDistance / seekRangeSize || 0;
-      var bufferEndFraction = bufferEndDistance / seekRangeSize || 0;
-      var playheadFraction = playheadDistance / seekRangeSize || 0;
+      const bufferStartFraction = bufferStartDistance / seekRangeSize || 0;
+      const bufferEndFraction = bufferEndDistance / seekRangeSize || 0;
+      const playheadFraction = playheadDistance / seekRangeSize || 0;
 
       gradient.push('#000 ' + bufferStartFraction * 100 + '%');
       gradient.push('#ccc ' + bufferStartFraction * 100 + '%');
@@ -319,4 +380,3 @@ class DVRSeekBar {
 }
 
 export default DVRSeekBar;
-/////////////////////////
