@@ -76,6 +76,7 @@ class Dvrseekbar extends Plugin {
       progressControl.disable();
 
       const liveButton = new LiveButton();
+
       controlBar.el_.insertBefore(liveButton.getEl(), controlBar.progressControl.el_.nextSibling);
 
       this.options.seekbar.shakaPlayer = this.shakaPlayer;
