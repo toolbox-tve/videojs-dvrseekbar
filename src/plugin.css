@@ -7,7 +7,7 @@
  */
 
 .video-js {
-  // This class is added to the video.js element by the plugin by default.
+  /* This class is added to the video.js element by the plugin by default. */
   &.vjs-dvrseekbar {
     display: block;
   }
@@ -134,4 +134,8 @@ input[type="range"]::-ms-fill-lower {
 }
 input[type="range"]::-ms-fill-upper {
   background-color: #9a905d;
+}
+
+.vjs-live .vjs-progress-control {
+  display: flex;
 }

@@ -2,17 +2,17 @@ import window from 'global/window';
 import document from 'global/document';
 
 /**
- * DVR Seekbar class
+ * Seekbar class
  *
- * @class DVRSeekBar
+ * @class Seekbar
  */
-class DVRSeekBar {
+class Seekbar {
   /**
-   * Creates an instance of DVRSeekBar.
+   * Creates an instance of Seekbar.
    *
    * @param {*} player videojs instance
    * @param {*} options dvrseekbar plugin options
-   * @memberof DVRSeekBar
+   * @memberof Seekbar
    */
   constructor(player, options) {
     if (!options) {
@@ -22,13 +22,8 @@ class DVRSeekBar {
     this.vjsPlayer_ = player;
     this.options_ = options;
 
-    if (this.vjsPlayer_.dash && this.vjsPlayer_.dash.shakaPlayer) {
-      this.player_ = this.vjsPlayer_.dash.shakaPlayer;
-      this.player_.addEventListener(
-        'buffering',
-        this.onBufferingStateChange_.bind(this)
-      );
-      // window.setInterval(this.updateTimeAndSeekRange_.bind(this), 125);
+    if (options.shakaPlayer) {
+      this.player_ = options.shakaPlayer;
     } else {
       this.player_ = this.vjsPlayer_;
     }
@@ -52,9 +47,7 @@ class DVRSeekBar {
     seekBarEl.setAttribute('id', 'seekBar');
 
     seekBarEl.addEventListener('mousedown', this.onSeekStart_.bind(this));
-    seekBarEl.addEventListener('touchstart', this.onSeekStart_.bind(this), {
-      passive: true
-    });
+    seekBarEl.addEventListener('touchstart', this.onSeekStart_.bind(this), { passive: true });
     seekBarEl.addEventListener('input', this.onSeekInput_.bind(this));
     seekBarEl.addEventListener('touchend', this.onSeekEnd_.bind(this));
     seekBarEl.addEventListener('mouseup', this.onSeekEnd_.bind(this));
@@ -62,23 +55,16 @@ class DVRSeekBar {
     this.dvrSeekBar_ = seekBarEl;
 
     this.currentTime_ = document.getElementById('dvr-current-time');
-    this.currentTime_.addEventListener(
-      'click',
-      this.onCurrentTimeClick_.bind(this)
-    );
+    this.currentTime_.addEventListener('click', this.onCurrentTimeClick_.bind(this));
 
     this.firstSeekRangeStart = null;
-
-    if (options.flowMode) {
-      // this.video_.addEventListener('playing', this.onFlowModePlaying_.bind(this));
-    }
   }
 
   /**
    * Get dvrseekbar element
    *
    * @return {Element} dvrseekbar element
-   * @memberof DVRSeekBar
+   * @memberof Seekbar
    */
   getEl() {
     return this.dvrSeekBar_;
@@ -87,7 +73,7 @@ class DVRSeekBar {
   /**
    * Called on seek start
    *
-   * @memberof DVRSeekBar
+   * @memberof Seekbar
    */
   onSeekStart_() {
     if (!this.enabled_) {
@@ -101,7 +87,7 @@ class DVRSeekBar {
   /**
    * Called on seek input
    *
-   * @memberof DVRSeekBar
+   * @memberof Seekbar
    */
   onSeekInput_() {
     if (!this.enabled_) {
@@ -129,7 +115,7 @@ class DVRSeekBar {
   /**
    * Seek input timeout
    *
-   * @memberof DVRSeekBar
+   * @memberof Seekbar
    */
   onSeekInputTimeout_() {
     const seekVal = parseFloat(this.dvrSeekBar_.value);
@@ -146,7 +132,7 @@ class DVRSeekBar {
   /**
    * Called on seek end
    *
-   * @memberof DVRSeekBar
+   * @memberof Seekbar
    */
   onSeekEnd_() {
     if (!this.enabled_) {
@@ -166,7 +152,7 @@ class DVRSeekBar {
   /**
    * Called onCurrentTimeClick
    *
-   * @memberof DVRSeekBar
+   * @memberof Seekbar
    */
   onCurrentTimeClick_() {
     if (!this.enabled_) {
@@ -183,7 +169,7 @@ class DVRSeekBar {
    * Iniciar desde el comienzo el contenido live
    * con FlowMode activado.
    *
-   * @memberof DVRSeekBar
+   * @memberof Seekbar
    */
   onFlowModePlaying_() {
     if (this.player_.isLive()) {
@@ -192,20 +178,10 @@ class DVRSeekBar {
   }
 
 	/**
-   * Called when buffering state changes
-   *
-   * @param {*} event event
-   * @memberof DVRSeekBar
-   */
-  onBufferingStateChange_(event) {
-    // this.bufferingSpinner_.style.display = event.buffering ? 'inherit' : 'none';
-  }
-
-	/**
    * Returns if dvrseekbar is enabled or not
    *
    * @return {boolean} true or false
-   * @memberof DVRSeekBar
+   * @memberof Seekbar
    */
   isOpaque_() {
     if (!this.enabled_) {
@@ -254,7 +230,7 @@ class DVRSeekBar {
 	/**
   * Called when the seek range or current time need to be updated.
   * @private
-  * @memberof DVRSeekBar
+  * @memberof Seekbar
   */
   updateTimeAndSeekRange_() {
     // Suppress updates if the controls are hidden.
@@ -379,4 +355,4 @@ class DVRSeekBar {
   }
 }
 
-export default DVRSeekBar;
+export default Seekbar;
