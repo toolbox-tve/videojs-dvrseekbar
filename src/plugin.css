@@ -6,134 +6,13 @@
  *   and ie 11 will be automatically prefixed
  */
 
+@import './components/LiveButton/liveButton.css';
+
 .video-js {
   /* This class is added to the video.js element by the plugin by default. */
   &.vjs-dvrseekbar {
     display: block;
   }
-}
-
-#dvr-current-time {
-  line-height: 3.5em;
-  font-size: 12px;
-  font-weight: bold;
-
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-}
-
-/* range inputs, common style */
-#seekBar {
-  display: flex;
-  height: 100%;
-  margin: 0 0 0 0;
-  padding: 0;
-
-  /* removes webkit default styling */
-  -webkit-appearance: none;
-
-  border: 0px solid #666;
-  border-radius: 0px;
-  background-color: rgba(115, 133, 159, 0.5);
-  outline: none;
-}
-/* removes mozilla default styling */
-#seekBar::-moz-range-track {
-  background-color: transparent;
-  outline: none;
-}
-/* removes IE default styling */
-#seekBar::-ms-track,
-#seekBar::-ms-fill-lower,
-#seekBar::-ms-fill-upper {
-  background-color: transparent;
-  outline: none;
-}
-
-/* per-instance styles */
-#seekBar {
-  flex-grow: 1;
-  cursor: pointer;
-}
-
-/* thumb pseudo-element, common style */
-#seekBar::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  background-color: white;
-  outline: none;
-}
-#seekBar::-moz-range-thumb {
-  background-color: white;
-  outline: none;
-}
-#seekBar::-ms-thumb {
-  background-color: white;
-  outline: none;
-}
-
-/* thumb pseudo-element, seek style */
-#seekBar::-webkit-slider-thumb {
-  width: 4px;
-  height: 100%;
-}
-#seekBar::-moz-range-thumb {
-  width: 4px;
-  height: 100%;
-}
-#seekBar::-ms-thumb {
-  width: 4px;
-  height: 100%;
-}
-
-/* turn off tooltips for the seekBar on IE */
-#seekBar::-ms-tooltip {
-  display: none;
-}
-
-@media screen and (-webkit-min-device-pixel-ratio:0) {
-  input[type='range'] {
-    overflow: hidden;
-    width: 80px;
-    -webkit-appearance: none;
-    background-color: white;
-  }
-
-  input[type='range']::-webkit-slider-runnable-track {
-    height: 10px;
-    -webkit-appearance: none;
-    color: white;
-    margin-top: -1px;
-  }
-
-  input[type='range']::-webkit-slider-thumb {
-    width: 10px;
-    -webkit-appearance: none;
-    height: 10px;
-    cursor: pointer;
-    background: #434343;
-    box-shadow: -9999px 0 0 9999px white;
-  }
-
-}
-
-/** FF **/
-input[type="range"]::-moz-range-progress {
-  background-color: white;
-  height: 100%;
-}
-input[type="range"]::-moz-range-track {
-  background-color: #9a905d;
-}
-
-/* IE*/
-input[type="range"]::-ms-fill-lower {
-  background-color: white;
-}
-input[type="range"]::-ms-fill-upper {
-  background-color: #9a905d;
 }
 
 .vjs-live .vjs-progress-control {

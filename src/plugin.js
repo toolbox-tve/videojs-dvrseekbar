@@ -1,17 +1,18 @@
 import videojs from 'video.js';
 import { version as VERSION } from '../package.json';
-import Seekbar from './seekbar';
-import LiveButton from './liveButton';
+
+import { getSeekRange } from './utils';
+
+import './components/LiveButton/liveButton';
+import './components/DvrProgressControl/DvrProgressControl';
 
 const Plugin = videojs.getPlugin('plugin');
 
 // Default options for the plugin.
 const defaults = {
-  startTime: 0,
-  externalSeekable: null,
-  seekbar: {},
+  startTime: 'LIVE',
   // Minimun time in dvr to show the seekbar
-  dvrMinTime: 900
+  dvrMinTime: 840
 };
 
 /**
@@ -45,6 +46,9 @@ class Dvrseekbar extends Plugin {
     // More on https://shaka-player-demo.appspot.com/docs/api/shaka.Player.html
     this.shakaPlayer = null;
 
+    this.seekbar = null;
+    this.liveButton = null;
+
     this.player.ready(() => {
       this.player.addClass('vjs-dvrseekbar');
     });
@@ -67,36 +71,45 @@ class Dvrseekbar extends Plugin {
    */
   init() {
     const controlBar = this.player.controlBar;
-    const progressControl = this.player.controlBar.progressControl;
+    const dvrSeekBar = controlBar && controlBar.dvrProgressControl && controlBar.dvrProgressControl.DvrSeekBar;
+    const playProgressBar = dvrSeekBar && dvrSeekBar.playProgressBar;
 
-    // if content is Live
     if (this.player.duration() === Infinity) {
-      // Disable videojs default seekbar
-      progressControl.seekBar.hide();
-      progressControl.disable();
-
-      const liveButton = new LiveButton();
-
-      controlBar.el_.insertBefore(liveButton.getEl(), controlBar.progressControl.el_.nextSibling);
-
-      this.options.seekbar.shakaPlayer = this.shakaPlayer;
-      const dvrSeekbar = new Seekbar(this.player, this.options.seekbar);
+      controlBar.liveButton.show();
 
       if (this.isDVR()) {
-        progressControl.el_.appendChild(dvrSeekbar.getEl());
+        controlBar.dvrProgressControl.show();
+        playProgressBar.removeChild('TimeTooltip');
+        this.player.currentTime(this.getCurrentLiveTime(this.options.startTime));
+      } else {
+        controlBar.dvrProgressControl.hide();
       }
     } else {
-      // Enable videojs default seekbar
-      progressControl.seekBar.show();
-      progressControl.enable();
+      controlBar.liveButton.hide();
+      controlBar.dvrProgressControl.show();
+
+      if (!playProgressBar.getChild('TimeTooltip')) {
+        playProgressBar.addChild('TimeTooltip');
+      }
     }
   }
 
   isDVR() {
     if (this.shakaPlayer) {
       return (this.shakaPlayer.seekRange().end - this.shakaPlayer.seekRange().start) > this.options.dvrMinTime;
+    } else if (this.player.seekable().length > 0) {
+      return (this.player.seekable().end(0) - this.player.seekable().start(0)) > this.options.dvrMinTime;
     }
-    return (this.player.seekable().end(0) - this.player.seekable().start(0)) > this.options.dvrMinTime;
+    return false;
+  }
+
+  getCurrentLiveTime(startTime) {
+    const seekRange = getSeekRange(this.player);
+
+    if (startTime === 'LIVE') {
+      return seekRange.end;
+    }
+    return seekRange.start;
   }
 }
 

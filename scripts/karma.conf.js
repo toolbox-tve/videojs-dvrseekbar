@@ -57,7 +57,7 @@ module.exports = function(config) {
     },
     detectBrowsers,
     reporters: ['dots'],
-    port: 9999,
+    port: 9998,
     urlRoot: '/test/',
     plugins: [
       {'middleware:static': ['factory', StaticMiddlewareFactory]},
