@@ -4,18 +4,8 @@
 
 ## Table of Contents
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-## Installation
-
-- [Installation](#installation)
-- [Usage](#usage)
-  - [`<script>` Tag](#script-tag)
-  - [Browserify/CommonJS](#browserifycommonjs)
-  - [RequireJS/AMD](#requirejsamd)
-- [License](#license)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<!-- START doctoc -->
+<!-- END doctoc -->
 ## Installation
 
 ```sh
@@ -71,7 +61,7 @@ require(['video.js', 'videojs-dvrseekbar'], function(videojs) {
 
 ## License
 
-Apache-2.0. Copyright (c) Luciano &lt;lribelle@toolboxtve.com&gt;
+Apache-2.0. Copyright (c) Toolbox-tve
 
 
 [videojs]: http://videojs.com/

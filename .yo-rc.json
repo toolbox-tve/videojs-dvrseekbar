@@ -3,12 +3,12 @@
     "scope": "",
     "name": "dvrseekbar",
     "description": "",
-    "author": "Luciano <lribelle@toolboxtve.com>",
+    "author": "Toolbox-tve",
     "license": "apache2",
     "pluginType": "advanced",
     "css": true,
     "docs": true,
     "lang": true,
-    "husky": "lint"
+    "husky": "none"
   }
 }
