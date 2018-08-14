@@ -2,70 +2,25 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>videojs-dvrseekbar</title>
-  <link href="/node_modules/video.js/dist/video-js.css" rel="stylesheet">
-  <link href="/dist/videojs-dvrseekbar.css" rel="stylesheet">
+  <title>videojs-dvrseekbar Demo</title>
+  <link href="node_modules/video.js/dist/video-js.css" rel="stylesheet">
+  <link href="dist/videojs-dvrseekbar.css" rel="stylesheet">
 </head>
 <body>
-  <h1>Video.js DVRSeekbar plugin</h1>
-  <!-- responsive classes: vjs-4-3 vjs-16-9 -->
-  <video id="videojs-dvrseekbar-player" class="video-js vjs-default-skin"
-    controls preload>
+  <video id="videojs-dvrseekbar-player" class="video-js vjs-default-skin" autoplay muted controls>
+    <source src="//vjs.zencdn.net/v/oceans.mp4" type='video/mp4'>
+    <source src="//vjs.zencdn.net/v/oceans.webm" type='video/webm'>
   </video>
   <ul>
-    <li><a href="/test/">Run unit tests in browser.</a></li>
-
+    <li><a href="/test/debug.html">Run unit tests in browser.</a></li>
+    <li><a href="docs/api/">Read generated docs.</a></li>
   </ul>
-  <script src="/node_modules/video.js/dist/video.js"></script>
-  <!--
-  <script src="/node_modules/hls.js/dist/hls.js"></script>
-  -->
-  <script src="/node_modules/videojs-contrib-hls/dist/videojs-contrib-hls.js"></script>
-  <script src="/dist/videojs-dvrseekbar.js"></script>
+  <script src="node_modules/video.js/dist/video.js"></script>
+  <script src="dist/videojs-dvrseekbar.js"></script>
   <script>
     (function(window, videojs) {
-      var sample = [
-            { src:'//vjs.zencdn.net/v/oceans.mp4', type:'video/mp4' },
-            { src:'//vjs.zencdn.net/v/oceans.webm', type:'video/webm' }
-          ],
-          sampleLive = {
-            type:'application/x-mpegURL',
-            src: 'http://media.blacktrash.org/stsp.m3u8',
-            isLive: true
-          },
-          liveContent = {
-          src: 'https://nickelodeonhls-lh.akamaihd.net/i/nickHLS_1@352363/master.m3u8?hdnea=st=1465313866~exp=1465918666~acl=/*~hmac=47bbab0618b185d73f35f9822bbe1e0e07c450ba8a9cb3bf6076db4f3530be65',
-          type: 'application/x-mpegURL',
-          isLive: true
-        };
-
-      var player =  null,
-      playerOptions = {
-        html5: {
-          hls: {
-            withCredentials: false
-          }
-        }
-      },
-      content = liveContent;
-
-      if (content.isLive) {
-
-        playerOptions.controlBar = {
-          volumeMenuButton: { 'vertical': true, inline: false }
-        };
-
-        player = window.player = videojs('videojs-dvrseekbar-player', playerOptions, function () {
-          player.src(content);
-          player.dvrseekbar();
-          player.play();
-        });
-
-      } else {
-        console.log('The Content is not Live, DVR Seekbar support Not Enabled!');
-        player = window.player = videojs('videojs-dvrseekbar-player');
-      }
-
+      var player = window.player = videojs('videojs-dvrseekbar-player');
+      var dvrseekbar = window.dvrseekbar = player.dvrseekbar();
     }(window, window.videojs));
   </script>
 </body>

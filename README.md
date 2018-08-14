@@ -1,7 +1,11 @@
 # videojs-dvrseekbar
 
-A Video.js plugin for Seekbar with DVR support.
 
+
+## Table of Contents
+
+<!-- START doctoc -->
+<!-- END doctoc -->
 ## Installation
 
 ```sh
@@ -26,7 +30,7 @@ This is the simplest case. Get the script in whatever way you prefer and include
 </script>
 ```
 
-### Browserify
+### Browserify/CommonJS
 
 When using with Browserify, install videojs-dvrseekbar via npm and `require` the plugin as you would any other module.
 
@@ -55,8 +59,10 @@ require(['video.js', 'videojs-dvrseekbar'], function(videojs) {
 });
 ```
 
-### VideoJS plugin standards and development flow
-See https://github.com/videojs/generator-videojs-plugin/blob/master/docs/standards.md
+## License
+
+Apache-2.0. Copyright (c) Toolbox-tve
+
 
 ### How to version
 Run ```npm version [patch | minor | major]``` to bump package.json version and generate a new release.

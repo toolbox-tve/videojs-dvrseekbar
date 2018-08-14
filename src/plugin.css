@@ -1,0 +1,20 @@
+/**
+ * css for videojs-dvrseekbar
+ * postcss allows you to
+ * - @import relative files, they will be inlined during build
+ * - not have to worry about prefixes, as the last 2 versions of all major browsers
+ *   and ie 11 will be automatically prefixed
+ */
+
+@import './components/LiveButton/liveButton.css';
+
+.video-js {
+  /* This class is added to the video.js element by the plugin by default. */
+  &.vjs-dvrseekbar {
+    display: block;
+  }
+}
+
+.vjs-live .vjs-progress-control {
+  display: flex;
+}

@@ -1,7 +1,18 @@
 import videojs from 'video.js';
+import { version as VERSION } from '../package.json';
+
+import { getSeekRange } from './utils';
+
+import './components/LiveButton/liveButton';
+import './components/DvrProgressControl/DvrProgressControl';
+
+const Plugin = videojs.getPlugin('plugin');
+
 // Default options for the plugin.
 const defaults = {
-  startTime: 0
+  startTime: 'LIVE',
+  // Minimun time in dvr to show the seekbar
+  dvrMinTime: 840
 };
 
 const SeekBar = videojs.getComponent('SeekBar');
@@ -55,125 +66,110 @@ SeekBar.prototype.updateAriaAttributes = function() {
 };
 
 /**
- * Function to invoke when the player is ready.
+ * An advanced Video.js plugin. For more information on the API
  *
- * This is a great place for your plugin to initialize itself. When this
- * function is called, the player will have its DOM and child components
- * in place.
- *
- * @function onPlayerReady
- * @param    {Player} player
- * @param    {Object} [options={}]
+ * See: https://blog.videojs.com/feature-spotlight-advanced-plugins/
  */
-const onPlayerReady = (player, options) => {
-  player.addClass('vjs-dvrseekbar');
-  player.controlBar.addClass('vjs-dvrseekbar-control-bar');
+class Dvrseekbar extends Plugin {
+  /**
+   * Create a Dvrseekbar plugin instance.
+   *
+   * @param  {Player} player
+   *         A Video.js Player instance.
+   *
+   * @param  {Object} [options]
+   *         An optional options object.
+   *
+   *         While not a core part of the Video.js plugin architecture, a
+   *         second argument of options is a convenient way to accept inputs
+   *         from your plugin's caller.
+   */
+  constructor(player, options) {
+    // the parent class will add player under this.player
+    super(player);
 
-  if (player.controlBar.progressControl) {
-    player.controlBar.progressControl.addClass('vjs-dvrseekbar-progress-control');
-  }
+    this.options = videojs.mergeOptions(defaults, options);
 
-  // ADD Live Button:
-  let btnLiveEl = document.createElement('div');
-  let newLink = document.createElement('a');
+    this.tech = null;
 
-  btnLiveEl.className = 'vjs-live-button vjs-control';
+    // Shaka Player instance
+    // More on https://shaka-player-demo.appspot.com/docs/api/shaka.Player.html
+    this.shakaPlayer = null;
 
-  newLink.innerHTML = document.getElementById(player.id_).getElementsByClassName('vjs-live-display')[0].innerHTML;
-  newLink.id = 'liveButton';
+    this.seekbar = null;
+    this.liveButton = null;
 
-  if (!player.paused()) {
-    newLink.className = 'vjs-live-label onair';
-  }
-
-  let clickHandler = function(e) {
-    player.currentTime(player.seekable().end(0));
-    player.play();
-  };
-
-  if (newLink.addEventListener) {
-    // DOM method
-    newLink.addEventListener('click', clickHandler, false);
-  } else if (newLink.attachEvent) {
-    // this is for IE, because it doesn't support addEventListener
-    newLink.attachEvent('onclick', function() {
-      return clickHandler.apply(newLink, [ window.event ]);
+    this.player.ready(() => {
+      this.player.addClass('vjs-dvrseekbar');
     });
+
+    // Tries to load the tech in "loadedmetadata" event
+    this.player.on('loadedmetadata', this.techLoaded.bind(this));
+    this.player.on('loadeddata', this.init.bind(this));
   }
 
-  btnLiveEl.appendChild(newLink);
-
-  let controlBar = document.getElementById(player.id_).getElementsByClassName('vjs-control-bar')[0];
-  let insertBeforeNode = document.getElementById(player.id_).getElementsByClassName('vjs-progress-control')[0];
-
-  controlBar.insertBefore(btnLiveEl, insertBeforeNode);
-
-  videojs.log('dvrSeekbar Plugin ENABLED!', options);
-};
-
-const onTimeUpdate = (player, e) => {
-  let time = player.seekable();
-  let btnLiveEl = document.getElementById('liveButton');
-
-  // When any tech is disposed videojs will trigger a 'timeupdate' event
-  // when calling stopTrackingCurrentTime(). If the tech does not have
-  // a seekable() method, time will be undefined
-  if (!time || !time.length) {
-    return;
+  techLoaded() {
+    this.tech = this.player.tech_;
+    // Assumes shakaPlayer is in player.tech TODO: make it configurable
+    this.shakaPlayer = this.tech && this.tech.shakaPlayer;
   }
 
-  player.duration(player.seekable().end(0));
+  /**
+   * Creates dvr seekbar
+   *
+   * @memberof Dvrseekbar
+   */
+  init() {
+    const controlBar = this.player.controlBar;
+    const dvrSeekBar = controlBar && controlBar.dvrProgressControl && controlBar.dvrProgressControl.DvrSeekBar;
+    const playProgressBar = dvrSeekBar && dvrSeekBar.playProgressBar;
 
-  if (time.end(0) - player.currentTime() < 30) {
-    btnLiveEl.className = 'label onair';
-  } else {
-    btnLiveEl.className = 'label';
+    if (this.player.duration() === Infinity) {
+      controlBar.liveButton.show();
+
+      if (this.isDVR()) {
+        controlBar.dvrProgressControl.show();
+        playProgressBar.removeChild('TimeTooltip');
+        this.player.currentTime(this.getCurrentLiveTime(this.options.startTime));
+      } else {
+        controlBar.dvrProgressControl.hide();
+      }
+    } else {
+      controlBar.liveButton.hide();
+      controlBar.dvrProgressControl.show();
+
+      if (!playProgressBar.getChild('TimeTooltip')) {
+        playProgressBar.addChild('TimeTooltip');
+      }
+    }
   }
 
-  player.duration(player.seekable().end(0));
-};
-
-/**
- * A video.js plugin.
- *
- * In the plugin function, the value of `this` is a video.js `Player`
- * instance. You cannot rely on the player being in a "ready" state here,
- * depending on how the plugin is invoked. This may or may not be important
- * to you; if not, remove the wait for "ready"!
- *
- * @function dvrseekbar
- * @param    {Object} [options={}]
- *           An object of options left to the plugin author to define.
- */
-const dvrseekbar = function(options) {
-  if (!options) {
-    options = defaults;
+  isDVR() {
+    if (this.shakaPlayer) {
+      return (this.shakaPlayer.seekRange().end - this.shakaPlayer.seekRange().start) > this.options.dvrMinTime;
+    } else if (this.player.seekable().length > 0) {
+      return (this.player.seekable().end(0) - this.player.seekable().start(0)) > this.options.dvrMinTime;
+    }
+    return false;
   }
 
-  this.on('timeupdate', (e) => {
-    onTimeUpdate(this, e);
-  });
+  getCurrentLiveTime(startTime) {
+    const seekRange = getSeekRange(this.player);
 
-  this.on('play', (e) => {});
+    if (startTime === 'LIVE') {
+      return seekRange.end;
+    }
+    return seekRange.start;
+  }
+}
 
-  this.on('pause', (e) => {
-    let btnLiveEl = document.getElementById('liveButton');
-
-    btnLiveEl.className = 'vjs-live-label';
-  });
-
-  this.ready(() => {
-    onPlayerReady(this, videojs.mergeOptions(defaults, options));
-  });
-};
-
-// Register the plugin with video.js.
-// Updated for video.js 6 - https://github.com/videojs/video.js/wiki/Video.js-6-Migration-Guide
-var registerPlugin = videojs.registerPlugin || videojs.plugin;
-
-registerPlugin('dvrseekbar', dvrseekbar);
+// Define default values for the plugin's `state` object here.
+Dvrseekbar.defaultState = {};
 
 // Include the version number.
-dvrseekbar.VERSION = '__VERSION__';
+Dvrseekbar.VERSION = VERSION;
 
-export default dvrseekbar;
+// Register the plugin with video.js.
+videojs.registerPlugin('dvrseekbar', Dvrseekbar);
+
+export default Dvrseekbar;

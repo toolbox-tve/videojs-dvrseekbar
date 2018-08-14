@@ -1,0 +1,14 @@
+{
+  "generator-videojs-plugin": {
+    "scope": "",
+    "name": "dvrseekbar",
+    "description": "",
+    "author": "Toolbox-tve",
+    "license": "apache2",
+    "pluginType": "advanced",
+    "css": true,
+    "docs": true,
+    "lang": true,
+    "husky": "none"
+  }
+}
