@@ -2,7 +2,7 @@ export function getSeekRange(player) {
   const shakaPlayer = player && player.tech_ && player.tech_.shakaPlayer;
   if (shakaPlayer && shakaPlayer.seekRange) {
     return shakaPlayer.seekRange();
-  } else if (player.seekable && player.seekable.length > 0) {
+  } else if (player.seekable && player.seekable().length > 0) {
     return {
       start: player.seekable().start(0),
       end: player.seekable().end(0)
