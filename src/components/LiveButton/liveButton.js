@@ -2,7 +2,7 @@ import videojs from 'video.js';
 import {getSeekRange, buildTimeString, behindLiveTime} from '../../utils';
 
 const Component = videojs.getComponent('Component');
-const SHOW_LIVE_MAX = 15;
+const SHOW_LIVE_MAX = 60;
 
 class LiveButton extends Component {
   constructor(player, options) {

@@ -145,9 +145,17 @@ class Dvrseekbar extends Plugin {
   }
 
   isDVR() {
-    if (this.shakaPlayer) {
+    const chromecastSessionManager = this.player.tech_ && this.player.tech_._chromecastSessionManager;
+    const liveSeekableRange = chromecastSessionManager && chromecastSessionManager.remotePlayer
+      && chromecastSessionManager.remotePlayer.liveSeekableRange;
+
+    if (liveSeekableRange) {
+      return (liveSeekableRange.end - liveSeekableRange.start) > this.options.dvrMinTime;
+    } else if (this.dash && this.dash.mediaPlayer){
+      return this.dash.mediaPlayer.getDVRWindowSize() > this.options.dvrMinTime;
+    } else if (this.shakaPlayer) {
       return (this.shakaPlayer.seekRange().end - this.shakaPlayer.seekRange().start) > this.options.dvrMinTime;
-    } else if (this.player.seekable().length > 0) {
+    } else if (this.player.tech_['seekable'] && this.player.seekable().length > 0) {
       return (this.player.seekable().end(0) - this.player.seekable().start(0)) > this.options.dvrMinTime;
     }
     return false;
