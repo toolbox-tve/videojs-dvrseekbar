@@ -1,7 +1,7 @@
 import videojs from 'video.js';
 import { version as VERSION } from '../package.json';
 
-import { getSeekRange } from './utils';
+import { getSeekRange, isLive } from './utils';
 
 import './components/LiveButton/liveButton';
 import './components/DvrProgressControl/DvrProgressControl';
@@ -124,7 +124,7 @@ class Dvrseekbar extends Plugin {
     const dvrSeekBar = controlBar && controlBar.dvrProgressControl && controlBar.dvrProgressControl.DvrSeekBar;
     const playProgressBar = dvrSeekBar && dvrSeekBar.playProgressBar;
 
-    if (this.player.duration() === Infinity) {
+    if (isLive(this.player)) {
       controlBar.liveButton.show();
 
       if (this.isDVR()) {
@@ -133,6 +133,9 @@ class Dvrseekbar extends Plugin {
         this.player.currentTime(this.getCurrentLiveTime(this.options.startTime));
       } else {
         controlBar.dvrProgressControl.hide();
+        controlBar.durationDisplay.hide()
+        controlBar.timeDivider.hide()
+        controlBar.currentTimeDisplay.hide()
       }
     } else {
       controlBar.liveButton.hide();

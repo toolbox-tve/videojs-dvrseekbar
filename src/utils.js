@@ -30,7 +30,7 @@ export function getSeekRange(player) {
 }
 
 export function getDuration(player) {
-  if (player.duration() === Infinity) {
+  if (isLive(player)) {
     const seekRange = getSeekRange(player);
     return seekRange.end - seekRange.start;
   }
@@ -71,4 +71,8 @@ export function behindLiveTime(player) {
     text = h + ':' + text;
   }
   return text;
+}
+
+export function isLive(player) {
+  return player.duration() === Infinity || player.duration() >= 4294967296;
 }

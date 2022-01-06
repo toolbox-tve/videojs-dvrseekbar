@@ -1,5 +1,5 @@
 import videojs from 'video.js';
-import {getDuration} from '../../../../utils';
+import {getDuration, isLive} from '../../../../utils';
 
 const MouseTimeDisplay = videojs.getComponent('MouseTimeDisplay');
 const MIN_LIVE_DELAY = 15;
@@ -13,10 +13,10 @@ class DvrMouseTimeDisplay extends MouseTimeDisplay {
 
     this.rafId_ = this.requestAnimationFrame(() => {
       const duration = getDuration(this.player_);
-      const seekTime = this.player_.duration() === Infinity ? seekBarPoint * duration - duration : seekBarPoint * duration;
+      const seekTime = isLive(this.player_) ? seekBarPoint * duration - duration : seekBarPoint * duration;
       let content = videojs.formatTime(Math.abs(seekTime));
 
-      if (this.player_.duration() === Infinity &&  Math.abs(seekTime) <= MIN_LIVE_DELAY) {
+      if (isLive(this.player_) &&  Math.abs(seekTime) <= MIN_LIVE_DELAY) {
         content = this.localize('LIVE');
       } else if (seekTime < 0) {
         content = `-${content}`;

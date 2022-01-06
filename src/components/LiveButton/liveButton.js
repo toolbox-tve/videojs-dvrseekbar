@@ -34,7 +34,7 @@ class LiveButton extends Component {
     // Consider "LIVE" when less than 15 second behind the live-edge.  Always
     // show the full time string when seeking, including the leading '-';
     // otherwise, the time string "flickers" near the live-edge.
-    if (displayTime !== Infinity && displayTime >= SHOW_LIVE_MAX) {
+    if ( (displayTime !== Infinity || displayTime === 4294967296) && displayTime >= SHOW_LIVE_MAX) {
       this.el().innerHTML = `- ${buildTimeString(displayTime, showHour)}`;
     } else {
       this.el().innerHTML = this.localize('LIVE');
